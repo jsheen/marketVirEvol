@@ -30,7 +30,7 @@ mod_eqn_b <- function(time, state, parameters){
       (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m - nat_mort * S_m + m_f * S_f - m_m * S_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m
     dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
     dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
-    dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
+    dR_m = gamma*I_m -m_m*R_m -nat_mort*R_m #+m_f*R_f
     dH_m = sigma*E_m -psi*H_m #+m_f*E_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
@@ -68,10 +68,10 @@ N_m = 1000
 p = 1
 m_f = 0.1 / 120
 N_f = 1e6
-prev_f = 0.2
+prev_f = 0.12
 I_f = E_f = N_f * (prev_f / 2)
-seroprev_f <- 0.3
-R_f = 0.3 * (E_f + (1 - prev_f) * N_f)
+seroprev_f <- 0.402
+R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 4) set the ranges for the parameters to vary ---------------------------------

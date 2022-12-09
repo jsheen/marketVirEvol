@@ -19,10 +19,10 @@ N_m = 1000
 p = 1
 m_f = 0.1 / 120
 N_f = 1e6
-prev_f = 0.2
+prev_f = 0.12
 I_f = E_f = N_f * (prev_f / 2)
-seroprev_f <- 0.3
-R_f = 0.3 * (E_f + (1 - prev_f) * N_f)
+seroprev_f <- 0.402
+R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 2) set the ranges for the parameters to vary ---------------------------------
@@ -166,7 +166,7 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, file = "~/Desktop/markets/code_output/obj/mm.RData")
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, file = "~/marketVirEvol/code_output/obj/mm.RData")
 # Percent of discarded parameter sets
 exclude_beta_cnt / (length(c1_range) * length(c2_range))
 # Q0 result: true, there is a single optimum in this model for parameters tested
@@ -285,7 +285,7 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, file = "~/Desktop/markets/code_output/obj/psi.RData")
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, file = "~/marketVirEvol/code_output/obj/psi.RData")
 # Q0 result: true, there is a single optimum in this model for parameters tested
 all(opt_psi_res)
 # Q1 result: true, as psi increases, R0 decreases for all virulence strategies
