@@ -44,7 +44,7 @@ gamma = 1 / 5
 sigma = 1 / 5
 epsilon = 0.1
 N_m = 1000
-p = 1
+p = 0
 m_f = 0.1 / 120
 N_f = 1e6
 prev_f = 0.12
@@ -153,8 +153,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/Desktop/markets/code_output/obj/extincts.RData")
-load("~/Desktop/markets/code_output/obj/extincts.RData")
+save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/Desktop/markets/code_output/obj/extincts_dens.RData")
+load("~/Desktop/markets/code_output/obj/extincts_dens.RData")
 
 # Double checked that if R0 is less than 1, then it goes extinct
 (should_be_extinct / R0_less_one) * 100

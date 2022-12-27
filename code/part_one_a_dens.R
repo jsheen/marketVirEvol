@@ -17,7 +17,7 @@ gamma = 1 / 5
 sigma = 1 / 5
 epsilon = 0.1
 N_m = 1000
-p = 1
+p = 0
 m_f = 0.1 / 120
 N_f = 1e6
 prev_f = 0.12
@@ -27,7 +27,7 @@ R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 2) set the ranges for the parameters to vary ---------------------------------
-c1_range = seq(0.001, 50, 1)
+c1_range = seq(0.000001, 50, 1)
 c2_range = seq(0.1, 1, 0.15)
 psi_clean_range = seq(1, 20, 3)
 m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
@@ -50,14 +50,14 @@ for (psi_clean in psi_clean_tests) {
     beta = c1 * vir^c2
     mort = c3 * vir
     psi = (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
-    test = get_R0(beta=beta, m_f=m_f, S_f=S_f, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
+    test = get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
     tests = c(tests, test)
   }
   test2 <- c(test2, max(tests) - tests[length(tests)])
 }
 plot(psi_clean_tests, test2)
 
-# 4) set 1: m_m questions ------------------------------------------------------
+# 3) set 1: m_m questions ------------------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
 opt_mm_res <- c()
 # Q1. This vector is used to store the answer to: for a combination of c1, c2, and psi, as m_m increases, does the R0 for all virulence strategies decrease?
@@ -73,79 +73,74 @@ exclude_beta_cnt <- 0
 for (c2 in c2_range) {
   print(paste0(round((which(round(c2_range, 2) == round(c2, 2)) - 1) / length(c2_range) * 100, 2),'% done.'))
   for (c1 in c1_range) {
-    test_beta <- c1 * max(virs)^c2
-    if (test_beta <= 100 & test_beta >= 1) {
-      for (psi_clean in psi_clean_range) {
-        # The following variables, opt_virs, and res_R0s, are used to answer store the answers to each question
-        opt_virs <- c()
-        res_R0s <- matrix(nrow=length(m_m_range), ncol=length(virs))
-        res_R0s_dex <- 1
-        # This innermost loop loops through each of the m_m for comparison
-        for (m_m in m_m_range) {
-          R0s <- c()
-          for (vir in virs) {
-            mort <- (vir) * c3
-            beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
-            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
-            R0s <- c(R0s, R0)
-          }
-          # Store all virulence strategies for this m_m
-          res_R0s[res_R0s_dex,] <- R0s
-          res_R0s_dex <- res_R0s_dex + 1
-          # What was the optimal virulence strategy for this m_m?
-          opt_vir <- virs[which(R0s == max(R0s))]
-          opt_virs <- c(opt_virs, opt_vir)
-          # Q0. Check if there is a single optimum
-          aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
-          bef_opt <- R0s[1:(which(R0s == max(R0s)))]
-          if (!all(aft_opt == cummin(aft_opt)) | !all(bef_opt == cummax(bef_opt))) {
-            opt_mm_res <- c(opt_mm_res, F)
-          } else {
-            opt_mm_res <- c(opt_mm_res, T)
-          }
+    for (psi_clean in psi_clean_range) {
+      # The following variables, opt_virs, and res_R0s, are used to answer store the answers to each question
+      opt_virs <- c()
+      res_R0s <- matrix(nrow=length(m_m_range), ncol=length(virs))
+      res_R0s_dex <- 1
+      # This innermost loop loops through each of the m_m for comparison
+      for (m_m in m_m_range) {
+        R0s <- c()
+        for (vir in virs) {
+          mort <- (vir) * c3
+          beta <- c1 * (vir)^c2
+          psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+          R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
+          R0s <- c(R0s, R0)
         }
-        # Q1. Check that for all virulence strategies, R0 decreases as turnover rate increases
-        R0_mm_res_input <- T
-        for (col_dex in 1:ncol(res_R0s)) {
-          if (!all(res_R0s[,col_dex] == cummin(res_R0s[,col_dex]))) {
-            R0_mm_res_input <- F
-          }
+        # Store all virulence strategies for this m_m
+        res_R0s[res_R0s_dex,] <- R0s
+        res_R0s_dex <- res_R0s_dex + 1
+        # What was the optimal virulence strategy for this m_m?
+        opt_vir <- virs[which(R0s == max(R0s))]
+        opt_virs <- c(opt_virs, opt_vir)
+        # Q0. Check if there is a single optimum
+        aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
+        bef_opt <- R0s[1:(which(R0s == max(R0s)))]
+        if (!all(aft_opt == cummin(aft_opt)) | !all(bef_opt == cummax(bef_opt))) {
+          opt_mm_res <- c(opt_mm_res, F)
+        } else {
+          opt_mm_res <- c(opt_mm_res, T)
         }
-        if (!R0_mm_res_input) {
-          stop('We are so confident this should be true, we will stop the entire loop if this is not true. The following parameter did not work.')
-          print(paste0(c1, '; ', c2, '; ', c3))
-        }
-        R0_mm_res <- c(R0_mm_res, R0_mm_res_input)
-        
-        # Q2. Check gets flatter after optimum when increasing m_m
-        to_check <- c()
-        for (m_m_dex in 1:length(opt_virs)) {
-          if (opt_virs[m_m_dex] != max(virs)) {
-            # Get the R0 of the opt virulence strategy
-            to_subtract_from <- res_R0s[m_m_dex, opt_virs[m_m_dex] + 1]
-            # Get the R0 of the max virulence strategy
-            to_subtract <- res_R0s[m_m_dex, ncol(res_R0s)]
-            to_check <- c(to_check, to_subtract_from - to_subtract)
-          }
-        }
-        if (length(to_check) >= 2) {
-          flat_mm_res <- c(flat_mm_res, all(to_check == cummin(to_check)))
-        }
-        
-        # Q3. Check whether optimal virulence increases when m_m increases
-        inc_mm_res <- c(inc_mm_res, all(opt_virs == cummax(opt_virs)))
-        
-        # Find difference in optimal virulence strategies when m_m is slow vs. fast
-        diff_virs <- c(diff_virs, paste0(c2, ',', c1, ',', psi_clean, ',', opt_virs[length(opt_virs)] - opt_virs[1]))
       }
-    } else {
-      exclude_beta_cnt <- exclude_beta_cnt + 1
+      # Q1. Check that for all virulence strategies, R0 decreases as turnover rate increases
+      R0_mm_res_input <- T
+      for (col_dex in 1:ncol(res_R0s)) {
+        if (!all(res_R0s[,col_dex] == cummin(res_R0s[,col_dex]))) {
+          R0_mm_res_input <- F
+        }
+      }
+      if (!R0_mm_res_input) {
+        stop('We are so confident this should be true, we will stop the entire loop if this is not true. The following parameter did not work.')
+        print(paste0(c1, '; ', c2, '; ', c3))
+      }
+      R0_mm_res <- c(R0_mm_res, R0_mm_res_input)
+      
+      # Q2. Check gets flatter after optimum when increasing m_m
+      to_check <- c()
+      for (m_m_dex in 1:length(opt_virs)) {
+        if (opt_virs[m_m_dex] != max(virs)) {
+          # Get the R0 of the opt virulence strategy
+          to_subtract_from <- res_R0s[m_m_dex, opt_virs[m_m_dex] + 1]
+          # Get the R0 of the max virulence strategy
+          to_subtract <- res_R0s[m_m_dex, ncol(res_R0s)]
+          to_check <- c(to_check, to_subtract_from - to_subtract)
+        }
+      }
+      if (length(to_check) >= 2) {
+        flat_mm_res <- c(flat_mm_res, all(to_check == cummin(to_check)))
+      }
+      
+      # Q3. Check whether optimal virulence increases when m_m increases
+      inc_mm_res <- c(inc_mm_res, all(opt_virs == cummax(opt_virs)))
+      
+      # Find difference in optimal virulence strategies when m_m is slow vs. fast
+      diff_virs <- c(diff_virs, paste0(c2, ',', c1, ',', psi_clean, ',', opt_virs[length(opt_virs)] - opt_virs[1]))
     }
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, file = "~/marketVirEvol/code_output/obj/mm.RData")
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, file = "~/marketVirEvol/code_output/obj/mm_dens.RData")
 # Percent of discarded parameter sets
 exclude_beta_cnt / (length(c1_range) * length(c2_range))
 # Q0 result: true, there is a single optimum in this model for parameters tested
@@ -166,7 +161,7 @@ fig <- fig %>% add_markers()
 fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1'), yaxis = list(title = 'c2'), zaxis = list(title = 'psi_clean')))
 fig
 
-# 5) set 2: psi_clean_range questions ------------------------------------------
+# 4) set 2: psi_clean_range questions ------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
 opt_psi_res <- c()
 # Q1. This vector is used to store the answer to: for a combination of c1, c2, and psi, as m_m increases, does the R0 for all virulence strategies decrease?
@@ -185,86 +180,81 @@ diff_virs <- c()
 for (c2 in c2_range) {
   print(paste0(round((which(round(c2_range, 2) == round(c2, 2)) - 1) / length(c2_range) * 100, 2),'% done.'))
   for (c1 in c1_range) {
-    test_beta <- c1 * max(virs)^c2
-    if (test_beta <= 100 & test_beta >= 1) {
-      for (m_m in m_m_range) {
-        # The following variables, opt_virs, and res_R0s, are used to answer store the answers to each question
-        opt_virs <- c()
-        res_R0s <- matrix(nrow=length(psi_clean_range), ncol=length(virs))
-        res_R0s_dex <- 1
-        # This innermost loop loops through each of the psi for comparison
-        for (psi_clean in psi_clean_range) {
-          R0s <- c()
-          for (vir in virs) {
-            mort <- (vir) * c3
-            beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
-            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
-            R0s <- c(R0s, R0)
-          }
-          # Store all virulence strategies for this m_m
-          res_R0s[res_R0s_dex,] <- R0s
-          res_R0s_dex <- res_R0s_dex + 1
-          # What was the optimal virulence strategy for this m_m?
-          opt_vir <- virs[which(R0s == max(R0s))]
-          opt_virs <- c(opt_virs, opt_vir)
-          # Q0. Check if there is a single optimum
-          aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
-          bef_opt <- R0s[1:(which(R0s == max(R0s)))]
-          if (!all(aft_opt == cummin(aft_opt)) | !all(bef_opt == cummax(bef_opt))) {
-            opt_psi_res <- c(opt_psi_res, F)
-          } else {
-            opt_psi_res <- c(opt_psi_res, T)
-          }
+    for (m_m in m_m_range) {
+      # The following variables, opt_virs, and res_R0s, are used to answer store the answers to each question
+      opt_virs <- c()
+      res_R0s <- matrix(nrow=length(psi_clean_range), ncol=length(virs))
+      res_R0s_dex <- 1
+      # This innermost loop loops through each of the psi for comparison
+      for (psi_clean in psi_clean_range) {
+        R0s <- c()
+        for (vir in virs) {
+          mort <- (vir) * c3
+          beta <- c1 * (vir)^c2
+          psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+          R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=F)
+          R0s <- c(R0s, R0)
         }
-        # Q1. Check that for all virulence strategies, R0 decreases as psi increases
-        R0_psi_res_input <- T
-        for (col_dex in 1:ncol(res_R0s)) {
-          if (!all(res_R0s[,col_dex] == cummin(res_R0s[,col_dex]))) {
-            R0_psi_res_input <- F
-          }
+        # Store all virulence strategies for this m_m
+        res_R0s[res_R0s_dex,] <- R0s
+        res_R0s_dex <- res_R0s_dex + 1
+        # What was the optimal virulence strategy for this m_m?
+        opt_vir <- virs[which(R0s == max(R0s))]
+        opt_virs <- c(opt_virs, opt_vir)
+        # Q0. Check if there is a single optimum
+        aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
+        bef_opt <- R0s[1:(which(R0s == max(R0s)))]
+        if (!all(aft_opt == cummin(aft_opt)) | !all(bef_opt == cummax(bef_opt))) {
+          opt_psi_res <- c(opt_psi_res, F)
+        } else {
+          opt_psi_res <- c(opt_psi_res, T)
         }
-        if (!R0_psi_res_input) {
-          stop('We are so confident this should be true, we will stop the entire loop if this is not true. The following parameter did not work.')
-          print(paste0(c1, '; ', c2, '; ', c3))
-        }
-        R0_psi_res <- c(R0_psi_res, R0_psi_res_input)
-        
-        # Q2. Check diff between R0 of opt vir and R0 of max vir gets sharper as psi increases
-        to_check <- c()
-        for (m_m_dex in 1:length(opt_virs)) {
-          if (opt_virs[m_m_dex] != max(virs)) {
-            # Get the R0 of the opt virulence strategy
-            to_subtract_from <- res_R0s[m_m_dex, opt_virs[m_m_dex] + 1]
-            # Get the R0 of the max virulence strategy
-            to_subtract <- res_R0s[m_m_dex, ncol(res_R0s)]
-            to_check <- c(to_check, to_subtract_from - to_subtract)
-          }
-        }
-        if (length(to_check) >= 2) {
-          flat_psi_res <- c(flat_psi_res, all(to_check == cummax(to_check)))
-        }
-        flat_more <- c(flat_more, paste0(c2, ',', c1, ',', m_m, ',', all(to_check == cummax(to_check))))
-        # if(!all(to_check == cummax(to_check))) {
-        #   print(paste0('c1:', c1))
-        #   print(paste0('c2: ', c2))
-        #   print(paste0('m_m: ', m_m))
-        # }
-        
-        # Q3. Check that opt vir decreases as psi increases
-        inc_psi_res <- c(inc_psi_res, all(opt_virs == cummin(opt_virs)))
-        inc_more <- c(inc_more, paste0(c2, ',', c1, ',', m_m, ',', all(opt_virs == cummin(opt_virs))))
-        
-        # Find difference in optimal virulence strategies when m_m is slow vs. fast
-        diff_virs <- c(diff_virs, paste0(c2, ',', c1, ',', m_m, ',', opt_virs[1] - opt_virs[length(opt_virs)]))
       }
-    } else {
-      exclude_beta_cnt <- exclude_beta_cnt + 1
+      # Q1. Check that for all virulence strategies, R0 decreases as psi increases
+      R0_psi_res_input <- T
+      for (col_dex in 1:ncol(res_R0s)) {
+        if (!all(res_R0s[,col_dex] == cummin(res_R0s[,col_dex]))) {
+          R0_psi_res_input <- F
+        }
+      }
+      if (!R0_psi_res_input) {
+        stop('We are so confident this should be true, we will stop the entire loop if this is not true. The following parameter did not work.')
+        print(paste0(c1, '; ', c2, '; ', c3))
+      }
+      R0_psi_res <- c(R0_psi_res, R0_psi_res_input)
+      
+      # Q2. Check diff between R0 of opt vir and R0 of max vir gets sharper as psi increases
+      to_check <- c()
+      for (m_m_dex in 1:length(opt_virs)) {
+        if (opt_virs[m_m_dex] != max(virs)) {
+          # Get the R0 of the opt virulence strategy
+          to_subtract_from <- res_R0s[m_m_dex, opt_virs[m_m_dex] + 1]
+          # Get the R0 of the max virulence strategy
+          to_subtract <- res_R0s[m_m_dex, ncol(res_R0s)]
+          to_check <- c(to_check, to_subtract_from - to_subtract)
+        }
+      }
+      if (length(to_check) >= 2) {
+        flat_psi_res <- c(flat_psi_res, all(to_check == cummax(to_check)))
+      }
+      flat_more <- c(flat_more, paste0(c2, ',', c1, ',', m_m, ',', all(to_check == cummax(to_check))))
+      # if(!all(to_check == cummax(to_check))) {
+      #   print(paste0('c1:', c1))
+      #   print(paste0('c2: ', c2))
+      #   print(paste0('m_m: ', m_m))
+      # }
+      
+      # Q3. Check that opt vir decreases as psi increases
+      inc_psi_res <- c(inc_psi_res, all(opt_virs == cummin(opt_virs)))
+      inc_more <- c(inc_more, paste0(c2, ',', c1, ',', m_m, ',', all(opt_virs == cummin(opt_virs))))
+      
+      # Find difference in optimal virulence strategies when m_m is slow vs. fast
+      diff_virs <- c(diff_virs, paste0(c2, ',', c1, ',', m_m, ',', opt_virs[1] - opt_virs[length(opt_virs)]))
     }
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, file = "~/marketVirEvol/code_output/obj/psi.RData")
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, file = "~/marketVirEvol/code_output/obj/psi_dens.RData")
 # Q0 result: true, there is a single optimum in this model for parameters tested
 all(opt_psi_res)
 # Q1 result: true, as psi increases, R0 decreases for all virulence strategies
