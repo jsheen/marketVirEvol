@@ -57,24 +57,4 @@ ggplot(final_df, aes(psi_clean, m_m)) + geom_tile(aes(fill = opt_vir)) +
   xlab('κ') + ylab(bquote(m[m])) + labs(fill="ESS") + 
   theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
   theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
