@@ -3,7 +3,7 @@
 #               evolution of markets paper, which is the extinction analysis
 #               across parameter values.
 # ------------------------------------------------------------------------------
-# 0) libraries -----------------------------------------------------------------
+# 0) libraries and sources -----------------------------------------------------
 library(deSolve)
 library(plotly)
 source('~/marketVirEvol/code/gen_functions.R')
@@ -31,7 +31,7 @@ mod_eqn_b <- function(time, state, parameters){
       (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m - nat_mort * S_m + m_f * S_f - m_m * S_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m
     dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
     dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
-    dR_m = gamma*I_m -m_m*R_m -nat_mort*R_m #+m_f*R_f
+    dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
     dH_m = sigma*E_m -psi*H_m #+m_f*E_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
@@ -54,9 +54,9 @@ R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 3) set the ranges for the parameters to vary ---------------------------------
-c1_range = seq(0.01, 50, 5)
+c1_range = c(0.001, seq(0.01, 50, 5))
 c2_range = seq(0.1, 1, 0.15)
-psi_clean_range = seq(1, 20, 3)
+psi_clean_range = seq(1, 10, 3)
 m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
@@ -64,7 +64,7 @@ if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) |
   stop('Must be in increasing order for the rest of the tests to make sense.')
 }
 
-# 4) run loop in order to see what percentage go extinct even if R0 >= 1 -------
+# 5) run loop in order to see what percentage go extinct even if R0 >= 1 -------
 extincts_full <- c()
 final_Ns <- c()
 equil_noDis_Ns <- c()
@@ -82,7 +82,7 @@ for (c2 in c2_range) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
             psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
-            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, both=T)
+            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }
           # What was the optimal virulence strategy for this m_m?
@@ -153,13 +153,13 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/Desktop/markets/code_output/obj/extincts.RData")
-load("~/Desktop/markets/code_output/obj/extincts.RData")
+save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/marketVirEvol/code_output/obj/extincts.RData")
+load("~/marketVirEvol/code_output/obj/extincts.RData")
 
 # Double checked that if R0 is less than 1, then it goes extinct
 (should_be_extinct / R0_less_one) * 100
 
-# 5) answer questions from the loop --------------------------------------------
+# 6) answer questions from the loop --------------------------------------------
 # What is the percentage of parameter combinations with R0 >= 1 that go extinct?:
 # This is around 3.4%. Should be cautious though as this will depend on parameter ranges chosen as well.
 extincts_res <- sapply(extincts_full, function(x) as.logical(strsplit(x, ',')[[1]][5]))
@@ -238,7 +238,7 @@ fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1', range=c(min(c1_ran
 fig
 
 # What percentage of combinations have R0 < 1 out of the parameters searched?
-# Around 5% have R0 strictly less than 1
+# Around 5.2% have R0 strictly less than 1
 R0_less_one / (length(extincts_full) + R0_less_one) * 100
 
 # What is the difference between the DFE equilibrium and the equilbrium with optimal virulence?
