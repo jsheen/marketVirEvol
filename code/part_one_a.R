@@ -144,7 +144,9 @@ diff_virs_psi_clean <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',
 diff_virs_col <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
 fig1 <- plot_ly(x = diff_virs_c1, y = diff_virs_c2, z = diff_virs_psi_clean, color=diff_virs_col)
 fig1 <- fig1 %>% add_markers()
-fig1 <- fig1 %>% layout(scene2 = list(xaxis = list(title = '<b>c<sub>1</sub></b>', font=list(size=25)), yaxis = list(title = '<b>c<sub>2</sub></b>'), zaxis = list(title = '<b>Ψ</b>')))
+fig1 <- fig1 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                      yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                      zaxis = list(title = list(text='<b>κ</b>', font=list(size=30)))))
 fig1
 
 # 4) set 2: psi_clean_range questions ------------------------------------------
@@ -271,7 +273,9 @@ diff_virs_mm <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]]
 diff_virs_col <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
 fig2 <- plot_ly(x = diff_virs_c1, y = diff_virs_c2, z = diff_virs_mm, color=diff_virs_col, )
 fig2 <- fig2 %>% add_markers()
-fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), yaxis = list(title = '<b>c<sub>2</sub></b>'), zaxis = list(title = '<b>m<sub>m</sub></b>')))
+fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                      yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                      zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
 fig2
 
 # 5) Output Figure 4 --------------------------------------------------------------
