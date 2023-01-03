@@ -27,7 +27,7 @@ R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 2) set the ranges for the parameters to vary ---------------------------------
-c1_range = c(0.001, 0.01, seq(0.02, 50, 1))
+c1_range = c(0.001, 0.01, 0.1, seq(1, 50, 1))
 c2_range = seq(0.1, 1, 0.15)
 psi_clean_range = seq(1, 10, 2) # This is equivalent to kappa in the text
 m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
@@ -66,7 +66,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) # This can be read as 1 / (average number of days spent in infectious class + 4 days)
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=T)
             R0s <- c(R0s, R0)
           }
@@ -181,7 +181,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }

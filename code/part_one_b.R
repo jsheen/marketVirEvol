@@ -21,7 +21,7 @@ mod_eqn_nob <- function(time, state, parameters){
     dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
     dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
     dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
-    dH_m = sigma*E_m -psi*H_m #+m_f*E_m
+    dH_m = sigma*E_m -psi*kappa*H_m #+m_f*E_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
 # This is the full model that includes the birth term
@@ -32,7 +32,7 @@ mod_eqn_b <- function(time, state, parameters){
     dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
     dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
     dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
-    dH_m = sigma*E_m -psi*H_m #+m_f*E_m
+    dH_m = sigma*E_m -psi*kappa*H_m #+m_f*E_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
 # 2) set the fixed parameters --------------------------------------------------
@@ -54,9 +54,9 @@ R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 3) set the ranges for the parameters to vary ---------------------------------
-c1_range = c(0.001, seq(0.01, 50, 5))
+c1_range = c(0.001, 0.01, 0.1, seq(1, 50, 1))
 c2_range = seq(0.1, 1, 0.15)
-psi_clean_range = seq(1, 10, 3)
+psi_clean_range = seq(1, 10, 2)
 m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
@@ -81,7 +81,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }
@@ -91,10 +91,10 @@ for (c2 in c2_range) {
           if (max(R0s) >= 1) {
             mort <- opt_vir * c3
             beta <- c1 * (opt_vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
             parameters <- c(m_m = m_m, gamma = gamma, m_f = m_f, beta = beta,
                             S_f = S_f, E_f = E_f, I_f = I_f, R_f = R_f, b = b, nat_mort = nat_mort,
-                            p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi)
+                            p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi, kappa = psi_clean)
             init <- c(S_m = 999,
                       E_m = 0,
                       I_m = 1,
@@ -106,24 +106,18 @@ for (c2 in c2_range) {
             extinct <- F
             if (out.df$I_m[nrow(out.df)] < 1) {
               extinct <- T
-              print(paste0('c1: ', c1))
-              print(paste0('c2: ', c2))
-              print(paste0('m_m: ', m_m))
-              print(paste0('psi_clean: ', psi_clean))
-              print(max(R0s))
-              print(opt_vir)
+              # print(paste0('c1: ', c1))
+              # print(paste0('c2: ', c2))
+              # print(paste0('m_m: ', m_m))
+              # print(paste0('psi_clean: ', psi_clean))
+              # print(max(R0s))
+              # print(opt_vir)
             }
             extincts_full <- c(extincts_full, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', extinct))
             final_Ns <- c(final_Ns, sum(out.df[nrow(out.df),2:5]))
             equil_noDis_Ns <- c(equil_noDis_Ns, (m_f * N_f) / (nat_mort + m_m))
             if (((m_f * N_f) / (nat_mort + m_m)) - sum(out.df[nrow(out.df),2:5]) < 0) {
-              print(((m_f * N_f) / (nat_mort + m_m)))
-              print(sum(out.df[nrow(out.df),2:5]))
-              print(c1)
-              print(c2)
-              print(m_m)
-              print(opt_vir)
-              print(psi_clean)
+              stop('Error in equilibrium N.')
             }
           } else {
             R0_less_one <- R0_less_one + 1
@@ -131,10 +125,10 @@ for (c2 in c2_range) {
             # Check if it goes extinct if it is less than one
             mort <- opt_vir * c3
             beta <- c1 * (opt_vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
             parameters <- c(m_m = m_m, gamma = gamma, m_f = m_f, beta = beta,
                             S_f = S_f, E_f = E_f, I_f = I_f, R_f = R_f, b = b, nat_mort = nat_mort,
-                            p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi)
+                            p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi, kappa=psi_clean)
             init <- c(S_m = 999,
                       E_m = 0,
                       I_m = 1,
@@ -145,6 +139,7 @@ for (c2 in c2_range) {
             out.df <- as.data.frame(out)
             if (out.df$I_m[nrow(out.df)] < 1) {
               should_be_extinct <- should_be_extinct + 1
+              extincts_full <- c(extincts_full, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', T))
             }
           }
         }
@@ -179,9 +174,8 @@ new_extincts_ls_dex <- 1
 for (input_c1 in c1_range) {
   for (input_c2 in c2_range) {
     for (input_m_m in m_m_range) {
-      test_if_exists <- which(orig_extincts_df$c1 == input_c1 & orig_extincts_df$c2 == input_c2 & round(orig_extincts_df$m_m, 10) == round(input_m_m, 10))
+      test_if_exists <- which(round(orig_extincts_df$c1, 4) == round(input_c1, 4) & round(orig_extincts_df$c2, 2) == round(input_c2, 2) & round(orig_extincts_df$m_m, 10) == round(input_m_m, 10))
       if (length(test_if_exists) > 0) {
-        print(round(input_m_m, 10))
         sub <- orig_extincts_df[test_if_exists,]
         ave_psi_clean <- mean(sub$psi_clean)
         new_row <- data.frame(matrix(c(input_c1, input_c2, input_m_m, ave_psi_clean), nrow=1, ncol=4))
@@ -202,14 +196,14 @@ not_extincts_m_m <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ','
 not_extincts_psi_clean <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][4]))[subset_not_extinct]
 orig_not_extincts_df <- data.frame(matrix(c(not_extincts_c1, not_extincts_c2, not_extincts_psi_clean, not_extincts_m_m), ncol=4, nrow=length(not_extincts_c1), byrow=F))
 colnames(orig_not_extincts_df) <- c('c1', 'c2', 'psi_clean', 'm_m')
+# Reduce to three dimensions instead of four
 new_not_extincts_ls <- list()
 new_not_extincts_ls_dex <- 1
 for (input_c1 in c1_range) {
   for (input_c2 in c2_range) {
     for (input_m_m in m_m_range) {
-      test_if_exists <- which(orig_not_extincts_df$c1 == input_c1 & orig_not_extincts_df$c2 == input_c2 & round(orig_not_extincts_df$m_m, 10) == round(input_m_m, 10))
+      test_if_exists <- which(round(orig_not_extincts_df$c1, 4) == round(input_c1, 4) & round(orig_not_extincts_df$c2, 2) == round(input_c2, 2) & round(orig_not_extincts_df$m_m, 10) == round(input_m_m, 10))
       if (length(test_if_exists) > 0) {
-        print(round(input_m_m, 10))
         sub <- orig_not_extincts_df[test_if_exists,]
         ave_psi_clean <- mean(sub$psi_clean)
         new_row <- data.frame(matrix(c(input_c1, input_c2, input_m_m, ave_psi_clean), nrow=1, ncol=4))
