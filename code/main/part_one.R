@@ -1,12 +1,12 @@
 # ------------------------------------------------------------------------------
 # @description: this is used to evaluate the first part of the virulence 
 #               evolution of markets paper. It is divided into two parts: 
-#               - all questions besides extinction question, which requires simulation
-#               - extinction question, which requires simulation
+#               - (a) all questions besides extinction question, which requires simulation
+#               - (b) extinction question, which requires simulation
 # ------------------------------------------------------------------------------
 # 0) libraries and sources -----------------------------------------------------
 library(plotly)
-source('~/marketVirEvol/code/gen_functions.R')
+source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) set the fixed parameters --------------------------------------------------
 virs = seq(0, 1000, 1)
