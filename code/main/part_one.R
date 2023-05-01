@@ -34,7 +34,7 @@ m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
     !all(c2_range == cummax(c2_range)) | !all(psi_clean_range == cummax(psi_clean_range))) {
-  stop('Must be in increasing order for the rest of the tests to make sense.')
+  stop('Must be in increasing order for tests.')
 }
 
 # 3) set 1: m_m questions ------------------------------------------------------
