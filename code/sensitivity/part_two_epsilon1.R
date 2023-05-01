@@ -1,12 +1,13 @@
 # ------------------------------------------------------------------------------
 # @description: this is used to evaluate the second part of the virulence 
-#               evolution of markets paper, which is the extinction analysis
-#               across parameter values.
+#               evolution of markets paper. It is divided into two parts: 
+#               - (a) all questions besides extinction question, which requires simulation
+#               - (b) extinction question, which requires simulation
 # ------------------------------------------------------------------------------
 # 0) libraries and sources -----------------------------------------------------
 library(deSolve)
 library(plotly)
-source('~/marketVirEvol/code/gen_functions.R')
+source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) set models to be used for the extinction analysis -------------------------
 # In these models, we do not allow for migration of incubation and infectious in order to see if
@@ -148,15 +149,15 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/marketVirEvol/code_output/obj/extincts.RData")
-load("~/marketVirEvol/code_output/obj/extincts.RData")
+save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/marketVirEvol/code_output/obj/extincts_epsilon1.RData")
+load("~/marketVirEvol/code_output/obj/extincts_epsilon1.RData")
 
 # Double checked that if R0 is less than 1, then it goes extinct
 (should_be_extinct / R0_less_one) * 100
 
 # 6) answer questions from the loop --------------------------------------------
 # What is the percentage of parameter combinations with R0 >= 1 that go extinct?:
-# This is around 3.98%. Should be cautious though as this will depend on parameter ranges chosen as well.
+# This is around 1.41%
 extincts_res <- sapply(extincts_full, function(x) as.logical(strsplit(x, ',')[[1]][5]))
 length(which(extincts_res)) / length(extincts_res) * 100
 
@@ -221,7 +222,11 @@ colnames(new_not_extincts_df) <- c('c1', 'c2', 'm_m', 'ave_psi_clean')
 fig <- plot_ly(data=new_extincts_df, x =~c1, y = ~c2, z = ~m_m, color=~ave_psi_clean)
 fig <- fig %>% add_markers()
 fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1', range=c(min(c1_range),max(c1_range))), yaxis = list(title = 'c2', range=c(min(c2_range),max(c2_range))), zaxis = list(title = 'm_m', range=c(min(m_m_range),max(m_m_range)))))
+fig <- fig %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                   yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                   zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
 fig
+
 
 # # Then visualize not extincts just to double check that loop worked correctly
 # Looks fine
@@ -229,10 +234,14 @@ fig
 fig <- plot_ly(data=new_not_extincts_df, x = ~c1, y = ~c2, z = ~m_m, color=~ave_psi_clean)
 fig <- fig %>% add_markers()
 fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1', range=c(min(c1_range),max(c1_range))), yaxis = list(title = 'c2', range=c(min(c2_range),max(c2_range))), zaxis = list(title = 'm_m', range=c(min(m_m_range),max(m_m_range)))))
+fig <- fig %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                   yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                   zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
+
 fig
 
 # What percentage of combinations have R0 < 1 out of the parameters searched?
-# Around 5.2% have R0 strictly less than 1
+# Around 0.4% have R0 strictly less than 1
 R0_less_one / (length(extincts_full) + R0_less_one) * 100
 
 # What is the difference between the DFE equilibrium and the equilbrium with optimal virulence?

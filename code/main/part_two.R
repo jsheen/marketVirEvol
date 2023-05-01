@@ -1,7 +1,8 @@
 # ------------------------------------------------------------------------------
 # @description: this is used to evaluate the second part of the virulence 
-#               evolution of markets paper, which is the extinction analysis
-#               across parameter values.
+#               evolution of markets paper. It is divided into two parts: 
+#               - (a) all questions besides extinction question, which requires simulation
+#               - (b) extinction question, which requires simulation
 # ------------------------------------------------------------------------------
 # 0) libraries and sources -----------------------------------------------------
 library(deSolve)
@@ -156,7 +157,7 @@ load("~/marketVirEvol/code_output/obj/extincts.RData")
 
 # 6) answer questions from the loop --------------------------------------------
 # What is the percentage of parameter combinations with R0 >= 1 that go extinct?:
-# This is around 1.41%
+# This is around 3.4%
 extincts_res <- sapply(extincts_full, function(x) as.logical(strsplit(x, ',')[[1]][5]))
 length(which(extincts_res)) / length(extincts_res) * 100
 
@@ -240,7 +241,7 @@ fig <- fig %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</s
 fig
 
 # What percentage of combinations have R0 < 1 out of the parameters searched?
-# Around 0.4% have R0 strictly less than 1
+# Around 1.6% have R0 strictly less than 1
 R0_less_one / (length(extincts_full) + R0_less_one) * 100
 
 # What is the difference between the DFE equilibrium and the equilbrium with optimal virulence?

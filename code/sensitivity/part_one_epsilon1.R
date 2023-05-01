@@ -1,12 +1,12 @@
 # ------------------------------------------------------------------------------
 # @description: this is used to evaluate the first part of the virulence 
 #               evolution of markets paper. It is divided into two parts: 
-#               - all questions besides extinction question, which requires simulation
-#               - extinction question, which requires simulation
+#               - (a) all questions besides extinction question, which requires simulation
+#               - (b) extinction question, which requires simulation
 # ------------------------------------------------------------------------------
 # 0) libraries and sources -----------------------------------------------------
 library(plotly)
-source('~/marketVirEvol/code/gen_functions.R')
+source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) set the fixed parameters --------------------------------------------------
 virs = seq(0, 1000, 1)
@@ -34,7 +34,7 @@ m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
     !all(c2_range == cummax(c2_range)) | !all(psi_clean_range == cummax(psi_clean_range))) {
-  stop('Must be in increasing order for the rest of the tests to make sense.')
+  stop('Must be in increasing order for tests.')
 }
 
 # 3) set 1: m_m questions ------------------------------------------------------
@@ -66,7 +66,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) # This can be read as 1 / (average number of days spent in infectious class + 4 days)
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=T)
             R0s <- c(R0s, R0)
           }
@@ -125,8 +125,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = "~/marketVirEvol/code_output/obj/mm.RData")
-load("~/marketVirEvol/code_output/obj/mm.RData")
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = "~/marketVirEvol/code_output/obj/mm_epsilon1.RData")
+load("~/marketVirEvol/code_output/obj/mm_epsilon1.RData")
 # Percent of discarded parameter sets
 exclude_beta_cnt / (length(c1_range) * length(c2_range))
 # Q0 result: true, there is a single optimum in this model for parameters tested
@@ -181,7 +181,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }
@@ -228,11 +228,6 @@ for (c2 in c2_range) {
           flat_psi_res <- c(flat_psi_res, all(to_check == cummax(to_check)))
         }
         flat_more <- c(flat_more, paste0(c2, ',', c1, ',', m_m, ',', all(to_check == cummax(to_check))))
-        # if(!all(to_check == cummax(to_check))) {
-        #   print(paste0('c1:', c1))
-        #   print(paste0('c2: ', c2))
-        #   print(paste0('m_m: ', m_m))
-        # }
         
         # Q3. Check that opt vir decreases as psi increases
         inc_psi_res <- c(inc_psi_res, all(opt_virs == cummin(opt_virs)))
@@ -247,8 +242,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = "~/marketVirEvol/code_output/obj/psi.RData")
-load("~/marketVirEvol/code_output/obj/psi.RData")
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = "~/marketVirEvol/code_output/obj/psi_epsilon1.RData")
+load("~/marketVirEvol/code_output/obj/psi_epsilon1.RData")
 # Q0 result: true, there is a single optimum in this model for parameters tested
 all(opt_psi_res)
 # Q1 result: true, as psi increases, R0 decreases for all virulence strategies
@@ -278,7 +273,7 @@ fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1
                                       zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
 fig2
 
-# 5) Output Figure 4 --------------------------------------------------------------
+# 5) Output panels of Figure 4 --------------------------------------------------------------
 fig1
 fig2
 

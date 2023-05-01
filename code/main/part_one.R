@@ -66,7 +66,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) # This can be read as 1 / (average number of days spent in infectious class + 4 days)
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=T)
             R0s <- c(R0s, R0)
           }
@@ -181,7 +181,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }
@@ -228,11 +228,6 @@ for (c2 in c2_range) {
           flat_psi_res <- c(flat_psi_res, all(to_check == cummax(to_check)))
         }
         flat_more <- c(flat_more, paste0(c2, ',', c1, ',', m_m, ',', all(to_check == cummax(to_check))))
-        # if(!all(to_check == cummax(to_check))) {
-        #   print(paste0('c1:', c1))
-        #   print(paste0('c2: ', c2))
-        #   print(paste0('m_m: ', m_m))
-        # }
         
         # Q3. Check that opt vir decreases as psi increases
         inc_psi_res <- c(inc_psi_res, all(opt_virs == cummin(opt_virs)))
@@ -278,7 +273,7 @@ fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1
                                       zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
 fig2
 
-# 5) Output Figure 4 --------------------------------------------------------------
+# 5) Output panels of Figure 4 --------------------------------------------------------------
 fig1
 fig2
 
