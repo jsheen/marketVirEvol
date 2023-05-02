@@ -52,10 +52,3 @@ plot(virs, R0s, type='l')
 virs[which(R0s == max(R0s))]
 #plot(virs * c3, R0s, type='l')
 
-
-
-# To include in the testing doc:
-# Verified that the carrying capacity now makes sense at DFE when we also exclude arrival of recovereds into market
-# To check: is it true that DFE means there are no E, I, and R migrations into markets as well? Since there is no disease in the system? I think so, because there shouldn't be any of these classes at DFE, just S
-# To check: is it true that E_f, I_f, and R_f are not disease classes? I think so. If they are not disease classes, and just ways of getting new infections, they will be differentiated away since they do not depend on any of the market compartments. Even if it is, it would only be the exponential assumption that makes it treated as a new incubation, but conceptually, it is not a new infection
-# To check: is it true that E_f, I_f, and R_f migrations will not be included in the new infections part of the Greek F matrix? I think so, again, will be differentiated away anyway for some reason as above
