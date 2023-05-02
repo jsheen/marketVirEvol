@@ -4,8 +4,11 @@ Code to understand selection pressures in markets.
 
 ## code
 general: file containing functions used by files of code/main and a file for miscellaneous testing
+
 main: files used to create main results
+
 sensitivity: files of code/main when epsilon = 1
+
 additional_figs: file to create Figure 3
 ## code_output
 obj: .RData objects created by the files in code/main and code/sensitivity
