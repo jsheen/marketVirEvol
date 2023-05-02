@@ -129,7 +129,7 @@ save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = "~/mark
 load("~/marketVirEvol/code_output/obj/mm_epsilon1.RData")
 # Percent of discarded parameter sets
 exclude_beta_cnt / (length(c1_range) * length(c2_range))
-# Q0 result: true, there is a single optimum in this model for parameters tested
+# Q0 result: false, there are now multiple optima
 all(opt_mm_res)
 # Q1 result: true, as m_m increases, R0 decreases for all parameters
 all(R0_mm_res)
@@ -244,7 +244,7 @@ for (c2 in c2_range) {
 # Save objects
 save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = "~/marketVirEvol/code_output/obj/psi_epsilon1.RData")
 load("~/marketVirEvol/code_output/obj/psi_epsilon1.RData")
-# Q0 result: true, there is a single optimum in this model for parameters tested
+# Q0 result: false, now there are multiple optima
 all(opt_psi_res)
 # Q1 result: true, as psi increases, R0 decreases for all virulence strategies
 all(R0_psi_res)

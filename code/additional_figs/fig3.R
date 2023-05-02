@@ -1,6 +1,6 @@
 # 0) libraries and sources -----------------------------------------------------
 library(ggplot2)
-source('~/marketVirEvol/code/gen_functions.R')
+source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) parameters needed to get R0 for range of psi_cleans and m_ms --------------
 c1 = 1
@@ -20,8 +20,8 @@ epsilon = 0.1
 sigma = 1 / 5
 nat_mort = 1 / 365
 gamma = 1 / 5
-psi_cleans <- seq(1, 10, 0.1)
-m_ms <- seq(1/365, 1/3.5, 0.01)
+psi_cleans <- seq(1, 10, 0.05)
+m_ms <- seq(1/365, 1/3.5, 0.001)
 final_ls <- list()
 final_ls_dex <- 1
 for (psi_clean in psi_cleans) {
@@ -30,7 +30,7 @@ for (psi_clean in psi_cleans) {
     for (vir in virs) {
       beta = c1 * (vir) ^ c2
       mort = c3 * vir
-      psi = (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4)) * psi_clean
+      psi = (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
       R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
       R0s <- c(R0s, R0)
     }
