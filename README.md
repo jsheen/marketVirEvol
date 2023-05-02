@@ -11,6 +11,8 @@ sensitivity: files of code/main when epsilon = 1
 
 additional_figs: file to create Figure 3
 ## code_output
+figs: figures used in main text
+
 obj: .RData objects created by the files in code/main and code/sensitivity
 
 These programs are a work in progress, as we work to improve usability, error-catching, and speed of analysis. If you find errors, please contact Justin Sheen at jsheen (at) princeton (dot) edu.
