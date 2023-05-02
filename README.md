@@ -11,7 +11,7 @@ sensitivity: files of code/main when epsilon = 1
 
 additional_figs: file to create Figure 3
 ## code_output
-figs: figures used in main text
+figs: main and supplementary figures
 
 obj: .RData objects created by the files in code/main and code/sensitivity
 
