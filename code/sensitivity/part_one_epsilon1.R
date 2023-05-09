@@ -30,7 +30,7 @@ S_f = ((1 - prev_f) * N_f) - R_f
 c1_range = c(0.001, 0.01, 0.1, seq(1, 50, 1))
 c2_range = seq(0.1, 1, 0.15)
 psi_clean_range = seq(1, 10, 2) # This is equivalent to kappa in the text
-m_m_range = seq(1 / 365, 1 / 3.5, 0.025)
+m_m_range = seq(1 / 365, 1 / 5.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
     !all(c2_range == cummax(c2_range)) | !all(psi_clean_range == cummax(psi_clean_range))) {

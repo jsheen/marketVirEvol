@@ -16,12 +16,12 @@ I_f = E_f = N_f * (prev_f / 2)
 seroprev_f <- 0.402
 R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
-epsilon = 0.1
+epsilon = 1
 sigma = 1 / 5
 nat_mort = 1 / 365
 gamma = 1 / 5
 psi_cleans <- seq(1, 10, 0.05)
-m_ms <- seq(1/365, 1/3.5, 0.001)
+m_ms <- seq(1/365, 1/5.5, 0.001)
 final_ls <- list()
 final_ls_dex <- 1
 for (psi_clean in psi_cleans) {
