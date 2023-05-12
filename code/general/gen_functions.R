@@ -19,3 +19,15 @@ get_R0 <- function(beta, m_f, S_f, b, p, epsilon, sigma, nat_mort, m_m, gamma, m
   }
   return(R0)
 }
+get_R02 <- function(beta, m_f, S_f, b, p, epsilon, sigma, nat_mort, m_m, gamma, mort, psi, kappa, both=T) {
+  F_matrix = matrix(c(0, beta*((m_f * S_f) / (m_m + nat_mort))^(1-p), epsilon*beta*((m_f * S_f) / (m_m + nat_mort))^(1-p),
+                      0, 0, 0,
+                      0, 0, 0),nrow=3, ncol=3, byrow=T)
+  V_matrix = matrix(c((-sigma - nat_mort - m_m), 0, 0,
+                      sigma, (- m_m - gamma - mort - nat_mort), 0,
+                      sigma, 0, - kappa * psi), nrow=3, ncol=3, byrow=T)
+  V_matrix_inverse = solve(V_matrix)
+  G_matrix = F_matrix %*% V_matrix_inverse
+  R0_mat = eigen(G_matrix)$values[1]
+  return(R0_mat)
+}

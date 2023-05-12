@@ -10,19 +10,15 @@ library(plotly)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) set models to be used for the extinction analysis -------------------------
-# In these models, we do not allow for migration of incubation and infectious in order to see if
-# circulation is self-sustaining only with infections that were created in the market patch. This means
-# that we also do not include the newly infectious that migrate from the farms to contribute to the H compartment.
-# We comment out those terms which are not included in these modified models.
 # -------------------------------------------------------------------------------
 # This model excludes the birth term, and will be used instead of the previous model due to a division by 0 error when b=0
 mod_eqn_nob <- function(time, state, parameters){
   with(as.list(c(state, parameters)),{
-    dS_m = -(beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -nat_mort*S_m +m_f*S_f -m_m*S_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m
-    dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
-    dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
-    dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
-    dH_m = sigma*E_m -psi*kappa*H_m #+m_f*E_m
+    dS_m = -(beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m -nat_mort*S_m -m_m*S_m +m_f*S_f
+    dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m -sigma*E_m -nat_mort*E_m -m_m*E_m
+    dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m
+    dR_m = gamma*I_m -m_m*R_m -nat_mort*R_m
+    dH_m = sigma*E_m -psi*kappa*H_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
 # This is the full model that includes the birth term
@@ -30,10 +26,10 @@ mod_eqn_b <- function(time, state, parameters){
   with(as.list(c(state, parameters)),{
     dS_m = b * (S_m + E_m + I_m + R_m) -  
       (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m - nat_mort * S_m + m_f * S_f - m_m * S_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m
-    dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m #+m_f*E_m
-    dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m #+m_f*I_m
-    dR_m = gamma*I_m -m_m*R_m +m_f*R_f -nat_mort*R_m
-    dH_m = sigma*E_m -psi*kappa*H_m #+m_f*E_m
+    dE_m = (beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -sigma*E_m -nat_mort*E_m -m_m*E_m +epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m
+    dI_m = sigma*E_m -m_m*I_m -gamma*I_m -mort*I_m -nat_mort*I_m
+    dR_m = gamma*I_m -m_m*R_m -nat_mort*R_m
+    dH_m = sigma*E_m -psi*kappa*H_m
     return(list(c(dS_m, dE_m, dI_m, dR_m, dH_m)))})}
 
 # 2) set the fixed parameters --------------------------------------------------
@@ -67,6 +63,7 @@ if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) |
 
 # 5) run loop in order to see what percentage go extinct even if R0 >= 1 -------
 extincts_full <- c()
+extincts_full_less_one <- c()
 final_Ns <- c()
 equil_noDis_Ns <- c()
 R0_less_one <- 0
@@ -82,7 +79,7 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
+            psi <-  (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m_m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=F)
             R0s <- c(R0s, R0)
           }
@@ -92,7 +89,7 @@ for (c2 in c2_range) {
           if (max(R0s) >= 1) {
             mort <- opt_vir * c3
             beta <- c1 * (opt_vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
+            psi <-  (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             parameters <- c(m_m = m_m, gamma = gamma, m_f = m_f, beta = beta,
                             S_f = S_f, E_f = E_f, I_f = I_f, R_f = R_f, b = b, nat_mort = nat_mort,
                             p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi, kappa = psi_clean)
@@ -114,7 +111,7 @@ for (c2 in c2_range) {
               # print(max(R0s))
               # print(opt_vir)
             }
-            extincts_full <- c(extincts_full, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', extinct))
+            extincts_full <- c(extincts_full, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', extinct, ',', opt_vir))
             final_Ns <- c(final_Ns, sum(out.df[nrow(out.df),2:5]))
             equil_noDis_Ns <- c(equil_noDis_Ns, (m_f * N_f) / (nat_mort + m_m))
             if (((m_f * N_f) / (nat_mort + m_m)) - sum(out.df[nrow(out.df),2:5]) < 0) {
@@ -126,7 +123,7 @@ for (c2 in c2_range) {
             # Check if it goes extinct if it is less than one
             mort <- opt_vir * c3
             beta <- c1 * (opt_vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + 4))
+            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
             parameters <- c(m_m = m_m, gamma = gamma, m_f = m_f, beta = beta,
                             S_f = S_f, E_f = E_f, I_f = I_f, R_f = R_f, b = b, nat_mort = nat_mort,
                             p = p, mort = mort, sigma = sigma, epsilon = epsilon, psi=psi, kappa=psi_clean)
@@ -140,7 +137,9 @@ for (c2 in c2_range) {
             out.df <- as.data.frame(out)
             if (out.df$I_m[nrow(out.df)] < 1) {
               should_be_extinct <- should_be_extinct + 1
-              extincts_full <- c(extincts_full, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', T))
+              extincts_full_less_one <- c(extincts_full_less_one, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', T, ',', opt_vir, ',', max(R0s)))
+            } else {
+              extincts_full_less_one <- c(extincts_full_less_one, paste0(c1, ',', c2, ',', m_m, ',', psi_clean, ',', F, ',', opt_vir, ',', max(R0s)))
             }
           }
         }
@@ -149,47 +148,50 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(extincts_full, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/marketVirEvol/code_output/obj/extincts.RData")
+save(extincts_full, extincts_full_less_one, final_Ns, equil_noDis_Ns, R0_less_one, should_be_extinct, file = "~/marketVirEvol/code_output/obj/extincts.RData")
 load("~/marketVirEvol/code_output/obj/extincts.RData")
 
 # Double checked that if R0 is less than 1, then it goes extinct
-(should_be_extinct / R0_less_one) * 100
+extincts_res <- sapply(extincts_full_less_one, function(x) as.logical(strsplit(x, ',')[[1]][5]))
+length(which(extincts_res)) / length(extincts_res) * 100
 
 # 6) answer questions from the loop --------------------------------------------
 # What is the percentage of parameter combinations with R0 >= 1 that go extinct?:
-# This is around 2.4%
 extincts_res <- sapply(extincts_full, function(x) as.logical(strsplit(x, ',')[[1]][5]))
 length(which(extincts_res)) / length(extincts_res) * 100
 
-# Which parameter combinations go extinct?
-# First create dataframe for the extinct parameters
-subset_extinct <- which(extincts_res)
-extincts_c1 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][1]))[subset_extinct]
-extincts_c2 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][2]))[subset_extinct]
-extincts_m_m <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][3]))[subset_extinct]
-extincts_psi_clean <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][4]))[subset_extinct]
-orig_extincts_df <- data.frame(matrix(c(extincts_c1, extincts_c2, extincts_psi_clean, extincts_m_m), ncol=4, nrow=length(extincts_c1), byrow=F))
-colnames(orig_extincts_df) <- c('c1', 'c2', 'psi_clean', 'm_m')
-new_extincts_ls <- list()
-new_extincts_ls_dex <- 1
-for (input_c1 in c1_range) {
-  for (input_c2 in c2_range) {
-    for (input_m_m in m_m_range) {
-      test_if_exists <- which(round(orig_extincts_df$c1, 4) == round(input_c1, 4) & round(orig_extincts_df$c2, 2) == round(input_c2, 2) & round(orig_extincts_df$m_m, 10) == round(input_m_m, 10))
-      if (length(test_if_exists) > 0) {
-        sub <- orig_extincts_df[test_if_exists,]
-        ave_psi_clean <- mean(sub$psi_clean)
-        new_row <- data.frame(matrix(c(input_c1, input_c2, input_m_m, ave_psi_clean), nrow=1, ncol=4))
-        new_extincts_ls[[new_extincts_ls_dex]] <- new_row
-        new_extincts_ls_dex <- new_extincts_ls_dex + 1
+# Which parameter combinations go extinct of those with R0 >= 1?
+if ((length(which(extincts_res)) / length(extincts_res) * 100) != 0) {
+  # First create dataframe for the extinct parameters
+  subset_extinct <- which(extincts_res)
+  extincts_c1 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][1]))[subset_extinct]
+  extincts_c2 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][2]))[subset_extinct]
+  extincts_m_m <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][3]))[subset_extinct]
+  extincts_psi_clean <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][4]))[subset_extinct]
+  extincts_opt_vir <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][6]))[subset_extinct]
+  orig_extincts_df <- data.frame(matrix(c(extincts_c1, extincts_c2, extincts_psi_clean, extincts_m_m, extincts_opt_vir), ncol=5, nrow=length(extincts_c1), byrow=F))
+  colnames(orig_extincts_df) <- c('c1', 'c2', 'psi_clean', 'm_m', 'opt_vir')
+  new_extincts_ls <- list()
+  new_extincts_ls_dex <- 1
+  for (input_c1 in c1_range) {
+    for (input_c2 in c2_range) {
+      for (input_m_m in m_m_range) {
+        test_if_exists <- which(round(orig_extincts_df$c1, 4) == round(input_c1, 4) & round(orig_extincts_df$c2, 2) == round(input_c2, 2) & round(orig_extincts_df$m_m, 10) == round(input_m_m, 10))
+        if (length(test_if_exists) > 0) {
+          sub <- orig_extincts_df[test_if_exists,]
+          ave_psi_clean <- mean(sub$psi_clean)
+          new_row <- data.frame(matrix(c(input_c1, input_c2, input_m_m, ave_psi_clean), nrow=1, ncol=4))
+          new_extincts_ls[[new_extincts_ls_dex]] <- new_row
+          new_extincts_ls_dex <- new_extincts_ls_dex + 1
+        }
       }
     }
   }
+  new_extincts_df <- do.call(rbind, new_extincts_ls)
+  colnames(new_extincts_df) <- c('c1', 'c2', 'm_m', 'ave_psi_clean')
 }
-new_extincts_df <- do.call(rbind, new_extincts_ls)
-colnames(new_extincts_df) <- c('c1', 'c2', 'm_m', 'ave_psi_clean')
 
-# Then create a dataframe for the not extinct parameters
+# Then create a dataframe for the not extinct parameters of those with R0 >= 1
 subset_not_extinct <- which(!extincts_res)
 not_extincts_c1 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][1]))[subset_not_extinct]
 not_extincts_c2 <- sapply(extincts_full, function(x) as.numeric(strsplit(x, ',')[[1]][2]))[subset_not_extinct]
@@ -217,8 +219,7 @@ for (input_c1 in c1_range) {
 new_not_extincts_df <- do.call(rbind, new_not_extincts_ls)
 colnames(new_not_extincts_df) <- c('c1', 'c2', 'm_m', 'ave_psi_clean')
 
-# First visualize extincts
-# So among extincts, these occur when c1 is low, and there is a not very flat curve, and can occur when m_m is a bit low but with a lower psi_clean, or m_m is a bit higher with a higher_psi_clean
+# First visualize extincts when R0 is greater than or equal to 1
 fig <- plot_ly(data=new_extincts_df, x =~c1, y = ~c2, z = ~m_m, color=~ave_psi_clean)
 fig <- fig %>% add_markers()
 fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1', range=c(min(c1_range),max(c1_range))), yaxis = list(title = 'c2', range=c(min(c2_range),max(c2_range))), zaxis = list(title = 'm_m', range=c(min(m_m_range),max(m_m_range)))))
@@ -227,9 +228,7 @@ fig <- fig %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</s
                                       zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
 fig
 
-
 # # Then visualize not extincts just to double check that loop worked correctly
-# Looks fine
 # So among not_extincts, these occur when c1 is low, and there is a not very flat curve, and can occur when m_m is a bit low but with a lower psi_clean, or m_m is a bit higher with a higher_psi_clean
 fig <- plot_ly(data=new_not_extincts_df, x = ~c1, y = ~c2, z = ~m_m, color=~ave_psi_clean)
 fig <- fig %>% add_markers()
@@ -241,7 +240,7 @@ fig <- fig %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</s
 fig
 
 # What percentage of combinations have R0 < 1 out of the parameters searched?
-# Around 1.2% have R0 strictly less than 1
+# Around 1.1% have R0 strictly less than 1
 R0_less_one / (length(extincts_full) + R0_less_one) * 100
 
 # What is the difference between the DFE equilibrium and the equilbrium with optimal virulence?
