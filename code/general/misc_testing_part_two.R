@@ -45,6 +45,7 @@ m_m <- orig_extincts_df$m_m[i]
 psi_clean <- orig_extincts_df$psi_clean[i]
 opt_vir <- orig_extincts_df$opt_vir[i]
 mort <- opt_vir * c3
+psi <-  (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
 mod_eqn_nob <- function(time, state, parameters){
   with(as.list(c(state, parameters)),{
     dS_m = -(beta/((S_m + E_m + I_m + R_m)^p))*S_m*I_m -epsilon*(beta/((S_m + E_m + I_m + R_m)^p))*S_m*H_m -nat_mort*S_m -m_m*S_m +m_f*S_f
