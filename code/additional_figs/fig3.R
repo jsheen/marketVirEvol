@@ -3,12 +3,12 @@ library(ggplot2)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) parameters needed to get R0 for range of psi_cleans and m_ms --------------
-c1 = 1
-c2 = 0.5
+c1 = 1 / 230
+c2 = 0.55
 c3 = 1 / 1000
 virs = seq(1, 1000, 1)
 N_m = 1000
-p = 1
+p = 0
 m_f = 0.1 / 120
 N_f = 1e6
 prev_f = 0.12
@@ -20,7 +20,7 @@ epsilon = 0.1
 sigma = 1 / 5
 nat_mort = 1 / 365
 gamma = 1 / 5
-psi_cleans <- seq(1, 10, 0.05)
+psi_cleans <- seq(1, 10, 0.001)
 m_ms <- seq(1/365, 1/5.5, 0.001)
 final_ls <- list()
 final_ls_dex <- 1
@@ -50,7 +50,7 @@ for (vir in virs) {
   betas <- c(betas, c1 * vir ^c2)
   morts <- c(morts, c3 * vir)
 }
-plot(morts, betas, col='red', type='l', lwd=5, main='Transmission-Mortality Tradeoff', xlab='Mortality rate', ylab='Transmission rate')
+#plot(morts, betas, col='red', type='l', lwd=5, main='Transmission-Mortality Tradeoff', xlab='Mortality rate', ylab='Transmission rate')
 
 # 4) Next, plot heatmap --------------------------------------------------------
 ggplot(final_df, aes(psi_clean, m_m)) + geom_tile(aes(fill = opt_vir)) + 
