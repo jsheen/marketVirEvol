@@ -32,7 +32,7 @@ max(infects)
 virs <- seq(0, 1000, 1) # Should infect no more than 200 poultry initially
 DFE_markets <- 2267.22
 c2 <- 0.1
-c1 <- 1 / 23
+c1 <- 1 / 22
 infects <- c1 * (virs)^c2 * DFE_markets
 plot(virs, infects, type='l')
 max(infects)

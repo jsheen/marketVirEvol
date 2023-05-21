@@ -51,7 +51,7 @@ R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 
 # 3) set the ranges for the parameters to vary ---------------------------------
-c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200))
+c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
 c2_range = seq(0.1, 1, 0.15)
 psi_clean_range = seq(1, 10, 2)
 m_m_range = seq(1 / 365, 1 / 5.5, 0.025)
