@@ -29,7 +29,7 @@ DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
 # Environmental res params
 epsilon = 1
 psi = 1 / 5
-phi = 100
+phi = 1
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -81,6 +81,9 @@ for (c2 in c2_range) {
           res_R0s_dex <- res_R0s_dex + 1
           # What was the optimal virulence strategy for this m_m?
           opt_vir <- virs[which(R0s == max(R0s))]
+          if (length(opt_vir) > 1) {
+            stop('There should only be one maximum.')
+          }
           opt_virs <- c(opt_virs, opt_vir)
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
@@ -193,11 +196,15 @@ for (c2 in c2_range) {
                               sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, both=T)
             R0s <- c(R0s, R0)
           }
+          
           # Store all virulence strategies for this m_m
           res_R0s[res_R0s_dex,] <- R0s
           res_R0s_dex <- res_R0s_dex + 1
           # What was the optimal virulence strategy for this m_m?
           opt_vir <- virs[which(R0s == max(R0s))]
+          if (length(opt_vir) > 1) {
+            stop('There should only be one maximum.')
+          }
           opt_virs <- c(opt_virs, opt_vir)
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
@@ -284,10 +291,6 @@ fig2
 # 5) Output panels of Figure 4 --------------------------------------------------------------
 fig1
 fig2
-
-# 6) Write output of what percentage had change in ESS -------------------------
-
-
 
 
 

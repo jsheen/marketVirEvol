@@ -9,13 +9,12 @@ library(plotly)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) set the fixed parameters --------------------------------------------------
-virs = seq(0, 1000, 1)
+virs = seq(1, 1000, 1)
 c3 = 1e-03
 b = 0
 nat_mort = 1 / 365
 gamma = 1 / 5
 sigma = 1 / 5
-epsilon = 0.1
 N_m = 1000
 p = 0
 m_f = 0.1 / 120
@@ -26,6 +25,11 @@ seroprev_f <- 0.402
 R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
+
+# Environmental res params
+epsilon = 1
+psi = 1 / 5
+phi = 1
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -67,8 +71,9 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
-            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=T)
+            lambda <- beta * phi
+            R0 <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                              sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, m_I = m_m * 0.5, both=T)
             R0s <- c(R0s, R0)
           }
           # Store all virulence strategies for this m_m
@@ -76,6 +81,9 @@ for (c2 in c2_range) {
           res_R0s_dex <- res_R0s_dex + 1
           # What was the optimal virulence strategy for this m_m?
           opt_vir <- virs[which(R0s == max(R0s))]
+          if (length(opt_vir) > 1) {
+            stop('There should only be one maximum.')
+          }
           opt_virs <- c(opt_virs, opt_vir)
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
@@ -126,8 +134,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = "~/marketVirEvol/code_output/obj/mm_dens.RData")
-load("~/marketVirEvol/code_output/obj/mm_dens.RData")
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_diff_migrate", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_diff_migrate", lambda, "_", phi, ".RData"))
 # Percent of discarded parameter sets
 exclude_beta_cnt / (length(c1_range) * length(c2_range))
 # Q0 result: true, there is a single optimum in this model for parameters tested
@@ -149,6 +157,7 @@ fig1 <- fig1 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1<
                                      yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
                                      zaxis = list(title = list(text='<b>κ</b>', font=list(size=30)))))
 fig1
+
 
 # 4) set 2: psi_clean_range questions ------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
@@ -182,8 +191,9 @@ for (c2 in c2_range) {
           for (vir in virs) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
-            psi <- (1 / ((1 / (gamma + nat_mort + m_m + mort)) + (1 / gamma)))
-            R0 <- get_R0(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, psi=psi, kappa=psi_clean, both=T)
+            lambda <- beta * phi
+            R0 <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                              sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, m_I = m_m * 0.5, both=T)
             R0s <- c(R0s, R0)
           }
           # Store all virulence strategies for this m_m
@@ -191,6 +201,9 @@ for (c2 in c2_range) {
           res_R0s_dex <- res_R0s_dex + 1
           # What was the optimal virulence strategy for this m_m?
           opt_vir <- virs[which(R0s == max(R0s))]
+          if (length(opt_vir) > 1) {
+            stop('There should only be one maximum.')
+          }
           opt_virs <- c(opt_virs, opt_vir)
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
@@ -201,7 +214,6 @@ for (c2 in c2_range) {
             opt_psi_res <- c(opt_psi_res, T)
           }
         }
-        
         # Q1. Check that for all virulence strategies, R0 decreases as psi increases
         R0_psi_res_input <- T
         for (col_dex in 1:ncol(res_R0s)) {
@@ -244,8 +256,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = "~/marketVirEvol/code_output/obj/psi_dens.RData")
-load("~/marketVirEvol/code_output/obj/psi_dens.RData")
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_diff_migrate", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_diff_migrate", lambda, "_", phi, ".RData"))
 # Q0 result: true, there is a single optimum in this model for parameters tested
 all(opt_psi_res)
 # Q1 result: true, as psi increases, R0 decreases for all virulence strategies
@@ -272,11 +284,17 @@ fig2 <- plot_ly(x = diff_virs_c1, y = diff_virs_c2, z = diff_virs_mm, color=diff
 fig2 <- fig2 %>% add_markers()
 fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
                                       yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
-                                      zaxis = list(title = list(text='<b>m<sub>m</sub></b>', font=list(size=30)))))
+                                      zaxis = list(title = list(text='<b>m</b>', font=list(size=30)))))
 fig2
 
 # 5) Output panels of Figure 4 --------------------------------------------------------------
 fig1
 fig2
+
+
+
+
+
+
 
 
