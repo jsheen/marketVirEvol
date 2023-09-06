@@ -12,7 +12,7 @@ seroprev_f <- 0.402
 R_f = seroprev_f * (E_f + (1 - prev_f) * N_f)
 S_f = ((1 - prev_f) * N_f) - R_f
 c1 = 1 / 2300
-c2 = 0.7
+c2 = 0.6
 c3 = 1 / 1000
 epsilon = 1
 phi = 1
@@ -60,7 +60,8 @@ plot(alphas, res, type='l', col='blue')
 plot(alphas, res / orig_R0s, type='l', col='purple')
 all(res== cummax(res))
 
-plot(alphas, res2 / orig_R0s, type='l', col='green')
+# Figure S2
+plot(alphas, (res2 / orig_R0s) * 100, type='l', col='black', xlab='α', ylab='% of R0 is environment trans.', lwd=5, cex.lab=1.5)
 
 # Change in ESS
 which(orig_R0s == max(orig_R0s))
