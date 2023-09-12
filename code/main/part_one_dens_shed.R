@@ -34,7 +34,7 @@ phi = 1
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
 c2_range = seq(0.1, 1, 0.15)
-psi_clean_range = seq(1, 10, 2) # This is equivalent to kappa in the text
+psi_clean_range = seq(1, 10, 1) # This is equivalent to kappa in the text
 m_m_range = seq(1 / 365, 1 / 5.5, 0.025)
 length(c1_range) * length(c2_range) * length(psi_clean_range) * length(m_m_range)
 if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) | 
@@ -85,6 +85,15 @@ for (c2 in c2_range) {
             stop('There should only be one maximum.')
           }
           opt_virs <- c(opt_virs, opt_vir)
+          
+          if (m_m == max(m_m_range)) {
+            # Highest mm, optimal R0:
+            opt_R0_max_mm = max(R0s)
+          }
+          else if (m_m == min(m_m_range)) {
+            opt_R0_min_mm = min(R0s)
+          }
+
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
           bef_opt <- R0s[1:(which(R0s == max(R0s)))]
@@ -94,6 +103,7 @@ for (c2 in c2_range) {
             opt_mm_res <- c(opt_mm_res, T)
           }
         }
+        
         # Q1. Check that for all virulence strategies, R0 decreases as turnover rate increases
         R0_mm_res_input <- T
         for (col_dex in 1:ncol(res_R0s)) {
@@ -126,7 +136,7 @@ for (c2 in c2_range) {
         inc_mm_res <- c(inc_mm_res, all(opt_virs == cummax(opt_virs)))
         
         # Find difference in optimal virulence strategies when m_m is slow vs. fast
-        diff_virs_1 <- c(diff_virs_1, paste0(c2, ',', c1, ',', psi_clean, ',', opt_virs[length(opt_virs)] - opt_virs[1]))
+        diff_virs_1 <- c(diff_virs_1, paste0(c2, ',', c1, ',', psi_clean, ',', opt_virs[length(opt_virs)] - opt_virs[1], ',', opt_R0_max_mm, ',', opt_R0_min_mm))
       }
     } else {
       exclude_beta_cnt <- exclude_beta_cnt + 1
@@ -136,28 +146,6 @@ for (c2 in c2_range) {
 # Save objects
 save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_1, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_", lambda, "_", phi, ".RData"))
 load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_", lambda, "_", phi, ".RData"))
-# Percent of discarded parameter sets
-exclude_beta_cnt / (length(c1_range) * length(c2_range))
-# Q0 result: true, there is a single optimum in this model for parameters tested
-all(opt_mm_res)
-# Q1 result: true, as m_m increases, R0 decreases for all parameters
-all(R0_mm_res)
-# Q2 result: true, as m_m increases, R0 flattens after optimal virulence strategy
-all(flat_mm_res)
-# Q3 result: true, as m_m increases, optimal R0 increases
-all(inc_mm_res)
-# Plot 3D plot of differences
-diff_virs_c2 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
-diff_virs_c1 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
-diff_virs_psi_clean <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
-diff_virs_col <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
-fig1 <- plot_ly(x = diff_virs_c1, y = diff_virs_c2, z = diff_virs_psi_clean, color=diff_virs_col)
-fig1 <- fig1 %>% add_markers()
-fig1 <- fig1 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
-                                     yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
-                                     zaxis = list(title = list(text='<b>κ</b>', font=list(size=30)))))
-fig1
-
 
 # 4) set 2: psi_clean_range questions ------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
@@ -206,6 +194,15 @@ for (c2 in c2_range) {
             stop('There should only be one maximum.')
           }
           opt_virs <- c(opt_virs, opt_vir)
+          
+          if (psi_clean == max(psi_clean_range)) {
+            # Highest mm, optimal R0:
+            opt_R0_max_kappa = max(R0s)
+          }
+          else if (psi_clean == min(psi_clean_range)) {
+            opt_R0_min_kappa = min(R0s)
+          }
+          
           # Q0. Check if there is a single optimum
           aft_opt <- R0s[which(R0s == max(R0s)):length(R0s)]
           bef_opt <- R0s[1:(which(R0s == max(R0s)))]
@@ -215,6 +212,8 @@ for (c2 in c2_range) {
             opt_psi_res <- c(opt_psi_res, T)
           }
         }
+
+        
         # Q1. Check that for all virulence strategies, R0 decreases as psi increases
         R0_psi_res_input <- T
         for (col_dex in 1:ncol(res_R0s)) {
@@ -249,7 +248,7 @@ for (c2 in c2_range) {
         inc_more <- c(inc_more, paste0(c2, ',', c1, ',', m_m, ',', all(opt_virs == cummin(opt_virs))))
         
         # Find difference in optimal virulence strategies when m_m is slow vs. fast
-        diff_virs_2 <- c(diff_virs_2, paste0(c2, ',', c1, ',', m_m, ',', opt_virs[1] - opt_virs[length(opt_virs)]))
+        diff_virs_2 <- c(diff_virs_2, paste0(c2, ',', c1, ',', m_m, ',', opt_virs[1] - opt_virs[length(opt_virs)], ',', opt_R0_max_kappa, ',', opt_R0_min_kappa))
       }
     } else {
       exclude_beta_cnt <- exclude_beta_cnt + 1
@@ -259,41 +258,67 @@ for (c2 in c2_range) {
 # Save objects
 save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_", lambda, "_", phi, ".RData"))
 load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_", lambda, "_", phi, ".RData"))
-# Q0 result: true, there is a single optimum in this model for parameters tested
-all(opt_psi_res)
-# Q1 result: true, as psi increases, R0 decreases for all virulence strategies
-all(R0_psi_res)
-# Q2 result: false, though it is generally true that as psi increases, virulence strategies decrease a lot after optimum. This makes sense, as as psi increases, the very virulent strategies suffer the most by not having as great transmission gains.
-all(flat_psi_res)
-# Q3 result: true, as psi increases, optimal virulence strategies decrease. This is because there is less transmission benefits.
-all(inc_psi_res)
-# Make 3D plots to better understand psi results of Q2
-flat_more_c2 <- sapply(flat_more, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
-flat_more_c1 <- sapply(flat_more, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
-flat_more_mm <- sapply(flat_more, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
-flat_more_col <- ifelse(sapply(flat_more, function(x) strsplit(x, ',')[[1]][4]), 'true', 'false')
-fig <- plot_ly(x = flat_more_c1, y = flat_more_c2, z = flat_more_mm, color=flat_more_col)
-fig <- fig %>% add_markers()
-fig <- fig %>% layout(scene = list(xaxis = list(title = 'c1'), yaxis = list(title = 'c2'), zaxis = list(title = 'mm')))
-fig
+
+# All plotting -----------------------------------------------------------------
+max_R0_consider = 200
+
+diff_virs_c2 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
+diff_virs_c1 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
+diff_virs_psi_clean <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
+diff_virs_col <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
+diff_virs_R0 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
+diff_virs_R02 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+fig1 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_psi_clean[constrain_R0], color=diff_virs_col[constrain_R0])
+fig1 <- fig1 %>% add_markers()
+fig1 <- fig1 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                     yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                     zaxis = list(title = list(text='<b>κ</b>', font=list(size=30)))))
+fig1
+
 # Plot 3D plot of differences
 diff_virs_c2 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
 diff_virs_c1 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
 diff_virs_mm <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
 diff_virs_col <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
-fig2 <- plot_ly(x = diff_virs_c1, y = diff_virs_c2, z = diff_virs_mm, color=diff_virs_col, )
+diff_virs_R0 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
+diff_virs_R02 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+fig2 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_mm[constrain_R0], color=diff_virs_col[constrain_R0])
 fig2 <- fig2 %>% add_markers()
 fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
                                       yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
                                       zaxis = list(title = list(text='<b>m</b>', font=list(size=30)))))
 fig2
 
-# 5) Output panels of Figure 4 --------------------------------------------------------------
-fig1
-fig2
+# 6) Figure of the optimal R0s -------------------------------------------------
+diff_virs_c2 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
+diff_virs_c1 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
+diff_virs_psi_clean <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
+diff_virs_col <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
+diff_virs_R0 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
+diff_virs_R02 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+fig3 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_psi_clean[constrain_R0], color=diff_virs_R0[constrain_R0])
+fig3 <- fig3 %>% add_markers()
+fig3 <- fig3 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                     yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                     zaxis = list(title = list(text='<b>κ</b>', font=list(size=30)))))
+fig3
 
-
-
+diff_virs_c2 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
+diff_virs_c1 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
+diff_virs_mm <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][3]))
+diff_virs_col <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
+diff_virs_R0 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
+diff_virs_R02 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+fig4 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_mm[constrain_R0], color=diff_virs_R0[constrain_R0])
+fig4 <- fig4 %>% add_markers()
+fig4 <- fig4 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
+                                      yaxis = list(title = list(text='<b>c<sub>2</sub></b>', font=list(size=30))), 
+                                      zaxis = list(title = list(text='<b>m</b>', font=list(size=30)))))
+fig4
 
 
 

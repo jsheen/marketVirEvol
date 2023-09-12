@@ -1,5 +1,6 @@
 # 0) libraries and sources -----------------------------------------------------
 library(ggplot2)
+library(RColorBrewer)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) parameters needed to get R0 for range of psi_cleans and ms --------------
@@ -9,6 +10,8 @@ c3 = 1 / 1000
 virs = seq(1, 1000, 1)
 N = 1000
 p = 0
+b=0
+psi = 1 / 5
 m_f = 0.1 / 120
 N_f = 1e6
 prev_f = 0.12
@@ -37,13 +40,13 @@ for (psi_clean in psi_cleans) {
       R0s <- c(R0s, R0)
     }
     opt_vir <- virs[which(R0s == max(R0s))]
-    new_row <- data.frame(matrix(c(psi_clean, m, opt_vir), nrow=1, ncol=3))
+    new_row <- data.frame(matrix(c(psi_clean, m, opt_vir, max(R0s)), nrow=1, ncol=4))
     final_ls[[final_ls_dex]] <- new_row
     final_ls_dex <- final_ls_dex + 1
   }
 }
 final_df <- do.call(rbind, final_ls)
-colnames(final_df) <- c('psi_clean', 'm', 'opt_vir')
+colnames(final_df) <- c('psi_clean', 'm', 'opt_vir', 'max_R0')
 
 # 3) First, plot the tradeoff curve used ---------------------------------------
 betas = c()
@@ -54,11 +57,19 @@ for (vir in virs) {
 }
 #plot(morts, betas, col='red', type='l', lwd=5, main='Transmission-Mortality Tradeoff', xlab='Mortality rate', ylab='Transmission rate')
 
-# 4) Next, plot heatmap --------------------------------------------------------
+# 4) Next, plot heatmap of optimal virulences ----------------------------------
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 sc <- scale_fill_gradientn(colours = myPalette(100))
 ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = opt_vir)) + 
   xlab('κ') + ylab('m') + labs(fill="ESS") +  sc+
+  theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
+  theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
+
+# 5) Next, plot heatmap of optimal R0s -----------------------------------------
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+sc <- scale_fill_gradientn(colours = myPalette(100))
+ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = max_R0)) + 
+  xlab('κ') + ylab('m') + labs(fill="R0") +  sc+
   theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
   theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
 
