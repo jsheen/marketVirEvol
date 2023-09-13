@@ -91,7 +91,7 @@ for (c2 in c2_range) {
             opt_R0_max_mm = max(R0s)
           }
           else if (m_m == min(m_m_range)) {
-            opt_R0_min_mm = min(R0s)
+            opt_R0_min_mm = max(R0s)
           }
 
           # Q0. Check if there is a single optimum
@@ -200,7 +200,7 @@ for (c2 in c2_range) {
             opt_R0_max_kappa = max(R0s)
           }
           else if (psi_clean == min(psi_clean_range)) {
-            opt_R0_min_kappa = min(R0s)
+            opt_R0_min_kappa = max(R0s)
           }
           
           # Q0. Check if there is a single optimum
@@ -260,7 +260,7 @@ save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_2, file = pas
 load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_", lambda, "_", phi, ".RData"))
 
 # All plotting -----------------------------------------------------------------
-max_R0_consider = 200
+max_R0_consider = 100
 
 diff_virs_c2 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][1]))
 diff_virs_c1 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][2]))
@@ -268,7 +268,7 @@ diff_virs_psi_clean <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',
 diff_virs_col <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
 diff_virs_R0 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
 diff_virs_R02 <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
-constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1)# & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
 fig1 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_psi_clean[constrain_R0], color=diff_virs_col[constrain_R0])
 fig1 <- fig1 %>% add_markers()
 fig1 <- fig1 %>% layout(scene = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 
@@ -283,7 +283,7 @@ diff_virs_mm <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]]
 diff_virs_col <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
 diff_virs_R0 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
 diff_virs_R02 <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
-constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1 & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
+constrain_R0 <- which(diff_virs_R0 <= max_R0_consider & diff_virs_R0 >= 1)# & diff_virs_R02 <= max_R0_consider & diff_virs_R02 >= 1)
 fig2 <- plot_ly(x = diff_virs_c1[constrain_R0], y = diff_virs_c2[constrain_R0], z = diff_virs_mm[constrain_R0], color=diff_virs_col[constrain_R0])
 fig2 <- fig2 %>% add_markers()
 fig2 <- fig2 %>% layout(scene2 = list(xaxis = list(title = list(text='<b>c<sub>1</sub></b>', font=list(size=30))), 

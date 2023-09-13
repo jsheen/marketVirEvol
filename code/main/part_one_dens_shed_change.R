@@ -4,13 +4,13 @@
 
 # When there is a relationship between lambda and virulence --------------------
 get_perc_nonzero_change <- function(lambda, phi) {
-  max_R0_consider = 200
+  max_R0_consider = 100
   
   load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_", lambda, "_", phi, ".RData"))
   mm <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
   diff_virs_R0_mm <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
   diff_virs_R02_mm <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
-  constrain_R0_mm <- which(diff_virs_R0_mm <= max_R0_consider & diff_virs_R0_mm >= 1 & diff_virs_R02_mm <= max_R0_consider & diff_virs_R02_mm >= 1)
+  constrain_R0_mm <- which(diff_virs_R0_mm <= max_R0_consider & diff_virs_R0_mm >= 1 & (diff_virs_R02_mm / 1000) <= max_R0_consider & diff_virs_R02_mm >= 1)
   mm <- mm[constrain_R0_mm]
   print(paste0('N (mm): ', length(mm)))
   print(paste0('prop. zero change (mm): ', length(which(mm == 0)) / length(mm)))

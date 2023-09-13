@@ -25,7 +25,7 @@ nat_mort = 1 / 365
 gamma = 1 / 5
 phi = 1
 psi_cleans <- seq(1, 10, 0.1)
-ms <- seq(1/365, 1/5.5, 0.01)
+ms <- seq(1/30, 1/5.5, 0.01)
 final_ls <- list()
 final_ls_dex <- 1
 for (psi_clean in psi_cleans) {
@@ -65,7 +65,7 @@ ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = opt_vir)) +
   theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
   theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
 
-# 5) Next, plot heatmap of optimal R0s -----------------------------------------
+# 5) Next, plot heatmap of optimal R0s (note, this is using the market DFE, and would change under farm conditions) ---------
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 sc <- scale_fill_gradientn(colours = myPalette(100))
 ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = max_R0)) + 
