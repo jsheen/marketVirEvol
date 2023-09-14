@@ -4,7 +4,7 @@ library(RColorBrewer)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
 # 1) parameters needed to get R0 for range of psi_cleans and ms --------------
-c1 = 1 / 230
+c1 = 1 / 2300
 c2 = 0.6
 c3 = 1 / 1000
 virs = seq(1, 1000, 1)
