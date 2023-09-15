@@ -1,3 +1,5 @@
+# THERE ARE ERRORS IN THIS
+
 # ------------------------------------------------------------------------------
 # @description: this is used to evaluate the first part of the virulence 
 #               evolution of markets paper. It is divided into two parts: 
@@ -28,8 +30,7 @@ DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
 
 # Environmental res params
 epsilon = 1
-psi = 1 / 5
-phi = 1
+phi = 10
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -59,8 +60,9 @@ for (c2 in c2_range) {
       mort <- (vir) * c3
       beta <- c1 * (vir)^c2
       lambda <- beta * phi
-      R0_markets <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
-                                             sigma=sigma, nat_mort=nat_mort, m=market_m_m, m_I=market_m_m*0.5, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
+      psi <- (1 / 5) * (vir) * c3
+      R0_markets <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                                sigma=sigma, nat_mort=nat_mort, m=market_m_m, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
       R0s <- c(R0s, R0_markets)
     }
     opt_vir <- virs[which(R0s == max(R0s))]
@@ -74,8 +76,9 @@ for (c2 in c2_range) {
             mort <- (vir) * c3
             beta <- c1 * (vir)^c2
             lambda <- beta * phi
-            R0_compare <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
-                                                   sigma=sigma, nat_mort=nat_mort, m=m_m_range[m_dex], m_I=m_m_range[m_dex]*0.5, gamma=gamma, mort=mort, kappa=psi_clean_range[k_dex], psi=psi, both=T)
+            psi <- (1 / 5) * (vir) * c3
+            R0_compare <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                                      sigma=sigma, nat_mort=nat_mort, m=m_m_range[m_dex], gamma=gamma, mort=mort, kappa=psi_clean_range[k_dex], psi=psi, both=T)
             R0s_compare <- c(R0s_compare, R0_compare)
           }
           opt_vir_compare <- virs[which(R0s_compare == max(R0s_compare))]
@@ -90,5 +93,5 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(diff_virs, file = paste0("~/marketVirEvol/code_output/obj/dens_shed_diff_migrate_all_", phi, ".RData"))
-load(paste0("~/marketVirEvol/code_output/obj/dens_shed_diff_migrate_all_", phi, ".RData"))
+save(diff_virs, file = paste0("~/marketVirEvol/code_output/obj/dens_shed_ref1_all_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/dens_shed_ref1_all_", phi, ".RData"))
