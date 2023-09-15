@@ -6,9 +6,9 @@
 get_perc_nonzero_change <- function(lambda, phi) {
   max_R0_consider = 100
   
-  load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_", lambda, "_", phi, ".RData"))
-  mm <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
-  diff_virs_R0_mm <- sapply(diff_virs_1, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
+  load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
+  mm <- sapply(diff_virs_m_m, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
+  diff_virs_R0_mm <- sapply(diff_virs_m_m, function(x) as.numeric(strsplit(x, ',')[[1]][5]))
   constrain_R0_mm <- which(diff_virs_R0_mm <= max_R0_consider & diff_virs_R0_mm >= 1)
   mm <- mm[constrain_R0_mm]
   print(paste0('N (mm): ', length(mm)))
@@ -18,9 +18,9 @@ get_perc_nonzero_change <- function(lambda, phi) {
   if (length(which(mm < 0)) > 0) {
     stop('Error.')
   }
-  load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_", lambda, "_", phi, ".RData"))
-  psi <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
-  diff_virs_R02_psi <- sapply(diff_virs_2, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
+  load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
+  psi <- sapply(diff_virs_psi, function(x) as.numeric(strsplit(x, ',')[[1]][4]))
+  diff_virs_R02_psi <- sapply(diff_virs_psi, function(x) as.numeric(strsplit(x, ',')[[1]][6]))
   constrain_R0_psi <- which(diff_virs_R02_psi <= max_R0_consider & diff_virs_R02_psi >= 1)
   psi <- psi[constrain_R0_psi]
   print(paste0('N (psi): ', length(psi)))
@@ -45,9 +45,9 @@ get_perc_nonzero_change <- function(lambda, phi) {
     stop('Error (3).')
   }
 }
+get_perc_nonzero_change(lambda=0.00434782608695652, phi=0.1)
 get_perc_nonzero_change(lambda=0.0434782608695652, phi=1)
 get_perc_nonzero_change(lambda=0.434782608695652, phi=10)
 get_perc_nonzero_change(lambda=4.34782608695652, phi=100)
-get_perc_nonzero_change(lambda=0.00434782608695652, phi=0.1)
 
 
