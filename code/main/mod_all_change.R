@@ -4,20 +4,20 @@
 
 # When there is a relationship between lambda and virulence --------------------
 get_perc_nonzero_change_all <- function(phi) {
-  load(paste0("~/marketVirEvol/code_output/obj/dens_shed_ref1_all_", phi, ".RData"))
+  load(paste0("~/marketVirEvol/code_output/obj/dens_shed_all_", phi, ".RData"))
   max_diffs <- c()
   zero_diffs <- 0
   nonzero_diffs <- 0
   for (diff_vir in diff_virs) {
     # All differences should be positive, return error if not
-    if (sum(diff_vir > 0) != 0) {
-      stop('Error, no values should be positive.')
+    if (sum(diff_vir < 0) != 0) {
+      stop('Error, no values should be negative.')
     }
     # Check that it monotonically increases from left to right
     for (i in 1:nrow(diff_vir)) {
       foc_vec <- diff_vir[i,]
-      if(!all(foc_vec == cummin(foc_vec))){
-        stop('Error, not monotonically decreasing from left to right.')
+      if(!all(foc_vec == cummax(foc_vec))){
+        stop('Error, not monotonically increasing from left to right.')
       }
     }
     # Check that it monotonically decreases from top to bottom
@@ -40,5 +40,9 @@ get_perc_nonzero_change_all <- function(phi) {
   hist(max_diffs) # Max diff for each tradeoff curve
   max(max_diffs)
 }
+get_perc_nonzero_change_all(phi=0.1)
+get_perc_nonzero_change_all(phi=1)
 get_perc_nonzero_change_all(phi=10)
+get_perc_nonzero_change_all(phi=100)
+
 

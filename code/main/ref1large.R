@@ -28,8 +28,7 @@ DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
 
 # Environmental res params
 epsilon = 1
-psi = 1 / 5
-phi = 1
+phi = 0.1
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -74,8 +73,9 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          R0 <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
-                            sigma=sigma, nat_mort=nat_mort, m=m_m, m_I=m_m*0.5, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
+          psi <- (1 / 5) + (vir) * c3
+          R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                            sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)
         }
         # Store all virulence strategies for this m_m
@@ -146,8 +146,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_m_m, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
-load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_m_m, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_ref1large_", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_ref1large_", lambda, "_", phi, ".RData"))
 
 # 4) set 2: psi_clean_range questions ------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
@@ -179,8 +179,9 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          R0 <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
-                                         sigma=sigma, nat_mort=nat_mort, m=market_m_m, m_I=market_m_m*0.5, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, both=T)
+          psi <- (1 / 5) + (vir) * c3
+          R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+                            sigma=sigma, nat_mort=nat_mort, m=market_m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)
         }
         
@@ -253,8 +254,8 @@ for (c2 in c2_range) {
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_psi, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
-load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_diff_migrate_", lambda, "_", phi, ".RData"))
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_psi, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_ref1large_", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_ref1large_", lambda, "_", phi, ".RData"))
 
 # All plotting -----------------------------------------------------------------
 max_R0_consider = 100

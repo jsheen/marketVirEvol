@@ -28,7 +28,7 @@ DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
 
 # Environmental res params
 epsilon = 1
-phi = 10
+phi = 100
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -73,7 +73,7 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          psi <- (1 / 5) * (vir) * c3
+          psi <- (1 / 6) + (1 / 30) * (vir) * c3
           R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
                             sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)
@@ -179,7 +179,7 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          psi <- (1 / 5) * (vir) * c3
+          psi <- (1 / 6) + ((1 / 30) * (vir) * c3)
           R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
                             sigma=sigma, nat_mort=nat_mort, m=market_m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)

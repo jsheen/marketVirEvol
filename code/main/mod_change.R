@@ -45,9 +45,10 @@ get_perc_nonzero_change <- function(lambda, phi) {
     stop('Error (3).')
   }
 }
+get_perc_nonzero_change(lambda=0.00434782608695652, phi=0.1)
 get_perc_nonzero_change(lambda=0.0434782608695652, phi=1)
 get_perc_nonzero_change(lambda=0.434782608695652, phi=10)
 get_perc_nonzero_change(lambda=4.34782608695652, phi=100)
-get_perc_nonzero_change(lambda=0.00434782608695652, phi=0.1)
+
 
 

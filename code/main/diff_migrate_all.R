@@ -29,7 +29,7 @@ DFE_markets = (S_f * m_f) / (nat_mort + (1 / 5.5))
 # Environmental res params
 epsilon = 1
 psi = 1 / 5
-phi = 1
+phi = 100
 
 # 2) set the ranges for the parameters to vary ---------------------------------
 c1_range = c(1 / 2300000, 1 / 230000, 1 / 23000, 1 / 2300, seq(1 / 230, 1 / 23, by=1/200), 1 / 22)
@@ -43,6 +43,31 @@ if (!all(m_m_range == cummax(m_m_range)) | !all(c1_range == cummax(c1_range)) |
     !all(c2_range == cummax(c2_range)) | !all(psi_clean_range == cummax(psi_clean_range))) {
   stop('Must be in increasing order for tests.')
 }
+
+# diff_virs <- list()
+# diff_virs_dex <- 1
+# # Loop used to get answer to m_m
+# exclude_beta_cnt <- 0
+# for (c2 in c2_range) {
+#   #print(paste0(round((which(round(c2_range, 2) == round(c2, 2)) - 1) / length(c2_range) * 100, 2),'% done.'))
+#   for (c1 in c1_range) {
+#     test_beta <- c1 * max(virs)^c2 * DFE_markets
+#     R0s <- c()
+#     for (vir in virs) {
+#       mort <- (vir) * c3
+#       beta <- c1 * (vir)^c2
+#       lambda <- beta * phi
+#       R0_markets <- get_R0_shed_diff_migrate(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+#                                              sigma=sigma, nat_mort=nat_mort, m=market_m_m, m_I=market_m_m*0.5, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
+#       R0s <- c(R0s, R0_markets)
+#     }
+#     opt_vir <- virs[which(R0s == max(R0s))]
+#     full_condition <- test_beta <= 200 & test_beta >= 1 & max(R0s) <= 100 & max(R0s) >= 1
+#     if (full_condition) {
+#       print(paste0(c1, ', ', c2))
+#     }
+#   }
+# }
 
 # 3) Find differences between farm conditions and market conditions for each viable tradeoff curve
 # Vector used to find all differences between farm conditions and market conditions
