@@ -74,7 +74,7 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+          R0 <- get_R0_shed_nod(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
                             sigma=sigma, nat_mort=nat_mort, m=m_m, gamma=gamma, mort=mort, kappa=market_psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)
         }
@@ -139,15 +139,15 @@ for (c2 in c2_range) {
       
       # Find difference in optimal virulence strategies when m_m is slow vs. fast
       diff_virs_m_m <- c(diff_virs_m_m, paste0(c2, ',', c1, ',', market_psi_clean, ',', opt_virs[length(opt_virs)] - opt_virs[1], ',', opt_R0_max_mm, ',', opt_R0_min_mm))
-    
+      
     } else {
       exclude_beta_cnt <- exclude_beta_cnt + 1
     }
   }
 }
 # Save objects
-save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_m_m, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_mod_", lambda, "_", phi, ".RData"))
-load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_mod_", lambda, "_", phi, ".RData"))
+save(opt_mm_res, R0_mm_res, flat_mm_res, inc_mm_res, diff_virs_m_m, file = paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_mod_nod_", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/mm_dens_shed_mod_nod_", lambda, "_", phi, ".RData"))
 
 # 4) set 2: psi_clean_range questions ------------------------------------------
 # Q0. This vector is used to store the answer to whether there is a single optimum
@@ -179,7 +179,7 @@ for (c2 in c2_range) {
           mort <- (vir) * c3
           beta <- c1 * (vir)^c2
           lambda <- beta * phi
-          R0 <- get_R0_shed(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
+          R0 <- get_R0_shed_nod(beta=beta, m_f=m_f, S_f=S_f, b=b, p=p, epsilon=epsilon, lambda=lambda,
                             sigma=sigma, nat_mort=nat_mort, m=market_m_m, gamma=gamma, mort=mort, kappa=psi_clean, psi=psi, both=T)
           R0s <- c(R0s, R0)
         }
@@ -246,15 +246,15 @@ for (c2 in c2_range) {
       
       # Find difference in optimal virulence strategies when m_m is slow vs. fast
       diff_virs_psi <- c(diff_virs_psi, paste0(c2, ',', c1, ',', market_m_m, ',', opt_virs[1] - opt_virs[length(opt_virs)], ',', opt_R0_max_kappa, ',', opt_R0_min_kappa))
-    
+      
     } else {
       exclude_beta_cnt <- exclude_beta_cnt + 1
     }
   }
 }
 # Save objects
-save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_psi, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_mod_", lambda, "_", phi, ".RData"))
-load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_mod_", lambda, "_", phi, ".RData"))
+save(opt_psi_res, R0_psi_res, flat_psi_res, inc_psi_res, diff_virs_psi, file = paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_mod_nod_", lambda, "_", phi, ".RData"))
+load(paste0("~/marketVirEvol/code_output/obj/psi_dens_shed_mod_nod_", lambda, "_", phi, ".RData"))
 
 # All plotting -----------------------------------------------------------------
 max_R0_consider = 100
