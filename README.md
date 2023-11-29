@@ -1,6 +1,6 @@
 # marketVirEvol
 
-Code to understand selection pressures in markets.
+Code to understand selection pressures in live poultry markets. Accompanies Sheen, Rasambainarivo, Saad-Roy, Grefell, Metcalf (2023)
 
 ## code
 #### general: file containing functions used by files of code/main, as well as a testing file
