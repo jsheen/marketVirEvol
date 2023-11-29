@@ -1,8 +1,5 @@
 # ------------------------------------------------------------------------------
-# @description: this is used to evaluate the first part of the virulence 
-#               evolution of markets paper. It is divided into two parts: 
-#               - (a) all questions besides extinction question, which requires simulation
-#               - (b) extinction question, which requires simulation
+# @description: this is used to evaluate the virulence evolution of markets paper
 # ------------------------------------------------------------------------------
 # 0) libraries and sources -----------------------------------------------------
 library(plotly)

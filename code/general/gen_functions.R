@@ -40,27 +40,6 @@ get_R0_shed_diff_migrate <- function(beta, m_f, S_f, b, p, epsilon, lambda, sigm
   return(R0)
 }
 
-# 3) Set function to get R0 in the model when there is no direct transmission -----
-get_R0_shed_nod <- function(beta, m_f, S_f, b, p, epsilon, lambda, sigma, nat_mort, m, gamma, mort, kappa, psi, both=T) {
-  R0 = ((m_f * S_f + b) / (m + nat_mort))^(1-p) * (sigma / (sigma + nat_mort + m)) * (((epsilon * beta * lambda) / (kappa * psi * (m + gamma + mort + nat_mort))))
-  R0 = abs(R0)
-  if (both) {
-    F_matrix = matrix(c(0, 0, (epsilon * beta)*((m_f * S_f + b) / (m + nat_mort))^(1-p),
-                        0, 0, 0,
-                        0, 0, 0),nrow=3, ncol=3, byrow=T)
-    V_matrix = matrix(c((sigma + nat_mort + m), 0, 0,
-                        -sigma, (m + gamma + mort +nat_mort), 0,
-                        0, -lambda, kappa * psi), nrow=3, ncol=3, byrow=T)
-    V_matrix_inverse = solve(V_matrix)
-    G_matrix = F_matrix %*% V_matrix_inverse
-    R0_mat = eigen(G_matrix)$values[1]
-    if (round(R0, 2) != round(R0_mat, 2)) {
-      stop(paste0(R0, '; ', R0_mat))
-    }
-  }
-  return(R0)
-}
-
 
 
 
