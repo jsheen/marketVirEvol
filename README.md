@@ -3,7 +3,7 @@
 Code to understand selection pressures in markets.
 
 ## code
-#### general: file containing functions used by files of code/main
+#### general: file containing functions used by files of code/main, as well as a testing file
 - c1_c2_bounds.R: calculates range of c1 and c2 to test
 - gen_fuctions.R: functions to calculate R0 when there is and is not differential migration of infectious poultry
 - test_invade.R: testing file showing selection for lower virulence with higher cleaning
