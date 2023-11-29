@@ -22,7 +22,7 @@ Code to understand selection pressures in markets.
 - pip_fig/high(low)Corrected.csv: pairwise invasibility result with high(low) cleaning, before rerunning for longer inconclusive cells
 - pip_fig/kapHigh(Low)Mat2.csv: results of certain inconclusive cells of high(low) cleaing when running for longer
 - pip_fig/kapHigh(Low)Mat2_corrected.csv: pairwise invasibility result with with high(low) cleaning, after rerunning for longer inconclusive cells
-- pip_fig/out.png: pairwise invasibility results
+- pip_fig/out.png: pairwise invasibility results (Fig. S1)
 
 ## code_output
 #### obj: .RData objects created by the files in code/main
