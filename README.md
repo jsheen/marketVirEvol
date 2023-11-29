@@ -21,7 +21,7 @@ Code to understand selection pressures in markets.
 - pip_fig/create_revision_fig.R: script used to plot pairwise invasibility plots
 - pip_fig/high(low)Corrected.csv: pairwise invasibility result with high(low) cleaning, before rerunning for longer inconclusive cells
 - pip_fig/kapHigh(Low)Mat2.csv: results of certain inconclusive cells of high(low) cleaing when running for longer
-- pip_fig/kapHigh(Low)Mat2_corrected.csv: pairwise invasibility result with with high(low) cleaning, after reruning for longer inconclusive cells
+- pip_fig/kapHigh(Low)Mat2_corrected.csv: pairwise invasibility result with with high(low) cleaning, after rerunning for longer inconclusive cells
 - pip_fig/out.png: pairwise invasibility results
 
 ## code_output
