@@ -13,7 +13,7 @@ Code to understand selection pressures in markets.
 - mod_all.R: calculate the cumulative effects of cleaning and turnover rate on virulence evolution
 - mod_change.R: calculate the changes in virulence due to cleaning and turnover rate (Table S2)
 - mod_all_change: calculate the cumulative changes in virulence due to cleaning and turnover rate (Table S2)
-...the four scripts with "diff_migrate" in the title are the same as above, but for the condition of differential migration of infectious poultry (Table S3)
+- ...the four scripts with "diff_migrate" in the title are the same as above, but for the condition of differential migration of infectious poultry (Table S3)
 
 #### additional_figs: file to create Figure 3
 - fig3.R: script used to create Figure 3
