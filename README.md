@@ -3,11 +3,12 @@
 Code to understand selection pressures in markets.
 
 ## code
-### general: file containing functions used by files of code/main and a file with code used for miscellaneous testing
+#### general: file containing functions used by files of code/main and a file with code used for miscellaneous testing
+-
 
-- main: files used to create main results
+#### main: files used to create main results
 
-- additional_figs: file to create Figure 3
+#### additional_figs: file to create Figure 3
 ## code_output
 - obj: .RData objects created by the files in code/main and code/sensitivity
 
