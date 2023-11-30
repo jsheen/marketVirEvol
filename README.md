@@ -15,7 +15,7 @@ Code to understand selection pressures in live poultry markets. Accompanies Shee
 - mod_all_change: calculate the cumulative changes in virulence due to cleaning and turnover rate (Table S2)
 - ...the four scripts with "diff_migrate" in the title are the same as above, but for the sensitivity analysis of differential migration of infectious poultry (Table S3)
 
-#### additional_figs: file to create Fig. 3 and Fig. S1
+#### additional_figs: files to create Fig. 3 and Fig. S1
 - fig3.R: script used to create Fig. 3 illustrating, for an example tradeoff curve, how persistence and turnover can select for higher virulece
 - pip_fig/test_impulse2.R: script used to create pairwise invasibility results
 - pip_fig/create_revision_fig.R: script used to plot pairwise invasibility plots
