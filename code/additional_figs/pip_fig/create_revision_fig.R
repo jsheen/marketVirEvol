@@ -19,7 +19,7 @@ temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, f
   scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none", axis.text=element_text(size=15),
                                                                            axis.title=element_text(size=20),
                                                                            plot.title=element_text(size=20,face="bold")) +
-  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, Low κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
+  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, Low cleaning') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[1]] <- temp_plot
 
@@ -36,7 +36,7 @@ temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, f
   scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none", axis.text=element_text(size=15),
                                                                            axis.title=element_text(size=20),
                                                                            plot.title=element_text(size=20,face="bold")) +
-  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, High κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
+  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, High cleaning') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[2]] <- temp_plot
 
@@ -53,7 +53,7 @@ temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, f
   scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none", axis.text=element_text(size=15),
                                                                           axis.title=element_text(size=20),
                                                                           plot.title=element_text(size=20,face="bold")) +
-  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., Low κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
+  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., Low cleaning') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[3]] <- temp_plot
 
@@ -70,7 +70,7 @@ temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, f
   scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none", axis.text=element_text(size=15),
                                                                           axis.title=element_text(size=20),
                                                                           plot.title=element_text(size=20,face="bold")) +
-  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., High κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
+  xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., High cleaning') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[4]] <- temp_plot
 
