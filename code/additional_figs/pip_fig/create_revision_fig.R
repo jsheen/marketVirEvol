@@ -16,7 +16,9 @@ colnames(melted) <- c('invader_virulence', 'resident_virulence', 'value')
 melted$value <- ifelse(melted$value == 2, NA, melted$value)
 melted$resident_virulence <- as.numeric(as.character(melted$resident_virulence))
 temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, fill = factor(value))) + geom_tile() +
-  scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none") +
+  scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none", axis.text=element_text(size=15),
+                                                                           axis.title=element_text(size=20),
+                                                                           plot.title=element_text(size=20,face="bold")) +
   xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, Low κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[1]] <- temp_plot
@@ -31,7 +33,9 @@ colnames(melted) <- c('invader_virulence', 'resident_virulence', 'value')
 melted$value <- ifelse(melted$value == 2, NA, melted$value)
 melted$resident_virulence <- as.numeric(as.character(melted$resident_virulence))
 temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, fill = factor(value))) + geom_tile() +
-  scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none") +
+  scale_fill_manual(values = c("white", "black"), na.value='black') +theme(legend.position="none", axis.text=element_text(size=15),
+                                                                           axis.title=element_text(size=20),
+                                                                           plot.title=element_text(size=20,face="bold")) +
   xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP, High κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[2]] <- temp_plot
@@ -46,7 +50,9 @@ colnames(melted) <- c('invader_virulence', 'resident_virulence', 'value')
 melted$value <- ifelse(melted$value == 2, NA, melted$value)
 melted$resident_virulence <- as.numeric(as.character(melted$resident_virulence))
 temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, fill = factor(value))) + geom_tile() +
-  scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none") +
+  scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none", axis.text=element_text(size=15),
+                                                                          axis.title=element_text(size=20),
+                                                                          plot.title=element_text(size=20,face="bold")) +
   xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., Low κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[3]] <- temp_plot
@@ -61,7 +67,9 @@ colnames(melted) <- c('invader_virulence', 'resident_virulence', 'value')
 melted$value <- ifelse(melted$value == 2, NA, melted$value)
 melted$resident_virulence <- as.numeric(as.character(melted$resident_virulence))
 temp_plot <- ggplot(melted, aes(y = invader_virulence, x = resident_virulence, fill = factor(value))) + geom_tile() +
-  scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none") +
+  scale_fill_manual(values = c("white", "black"), na.value='gray') +theme(legend.position="none", axis.text=element_text(size=15),
+                                                                          axis.title=element_text(size=20),
+                                                                          plot.title=element_text(size=20,face="bold")) +
   xlab('Resident virulence') + ylab('Invader virulence') + ggtitle('PIP + erad. res., High κ') + scale_x_continuous(breaks = seq(0, 1000, by = 250))
 temp_plot
 plot_ls[[4]] <- temp_plot
