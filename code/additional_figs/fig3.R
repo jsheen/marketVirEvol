@@ -1,5 +1,6 @@
 # 0) libraries and sources -----------------------------------------------------
 library(ggplot2)
+library(latex2exp)
 library(RColorBrewer)
 source('~/marketVirEvol/code/general/gen_functions.R')
 
@@ -60,16 +61,20 @@ for (vir in virs) {
 # 4) Next, plot heatmap of optimal virulences ----------------------------------
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 sc <- scale_fill_gradientn(colours = myPalette(100))
-ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = opt_vir)) + 
-  xlab('κ') + ylab('m') + labs(fill="ESS") +  sc+
-  theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
-  theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
+p <- ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = opt_vir)) + 
+  xlab(TeX("$\\kappa$"))  + ylab(expression(italic('m'))) + labs(fill="ESS") +  sc+
+  theme(axis.text = element_text(size=8)) + theme(axis.title = element_text(size=10)) +
+  theme(legend.title = element_text(size=10)) + theme(legend.text = element_text(size=10)) #+
+  #theme(plot.margin = margin(t = 10, r = 10, b = 20, l = 10, unit = "pt"))
+
+ggsave("~/Desktop/Fig3.pdf", p, width=3.46, height=2.5, 
+        units = "in", device = pdf)
 
 # 5) Next, plot heatmap of optimal R0s (note, this is using the market DFE, and would change under farm conditions) ---------
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 sc <- scale_fill_gradientn(colours = myPalette(100))
 ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = max_R0)) + 
-  xlab('κ') + ylab('m') + labs(fill="R0") +  sc+
+  xlab(TeX("$\\kappa$"))  + ylab(expression(italic('m'))) + labs(fill="R0") +  sc+
   theme(axis.text = element_text(size=20)) + theme(axis.title = element_text(size=22)) +
   theme(legend.title = element_text(size=22)) + theme(legend.text = element_text(size=18))
 
