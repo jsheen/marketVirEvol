@@ -1,6 +1,6 @@
 # marketVirEvol
 
-Code to understand selection pressures in live poultry markets. Accompanies Sheen, Rasambainarivo, Saad-Roy, Grenfell, Metcalf (2023)
+Code to understand selection pressures in live poultry markets. Accompanies Sheen, Rasambainarivo, Saad-Roy, Grenfell, Metcalf, Markers as drivers of selection for highly virulent poultry pathogens, Nature Communications (2024)
 
 ## code
 #### general: file containing functions used by files of code/main, as well as a testing file
