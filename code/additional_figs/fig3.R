@@ -62,7 +62,9 @@ for (vir in virs) {
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 sc <- scale_fill_gradientn(colours = myPalette(100))
 p <- ggplot(final_df, aes(psi_clean, m)) + geom_tile(aes(fill = opt_vir)) + 
-  xlab(TeX("$\\kappa$"))  + ylab(expression(italic('m'))) + labs(fill="ESS") +  sc+
+  #xlab(expression(italic(kappa))) +
+  xlab(TeX("$\\textit{\\kappa}$"))  +
+  ylab(expression(italic('m'))) + labs(fill="ESS") +  sc+
   theme(axis.text = element_text(size=8)) + theme(axis.title = element_text(size=10)) +
   theme(legend.title = element_text(size=10)) + theme(legend.text = element_text(size=10)) #+
   #theme(plot.margin = margin(t = 10, r = 10, b = 20, l = 10, unit = "pt"))
